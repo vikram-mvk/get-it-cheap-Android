@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navbar_items"
+        android:title="ITEMS"
+        android:icon="@drawable/icon_navbar_items"/>
+    <item
+        android:id="@+id/navbar_favourites"
+        android:title="FAVOURITES"
+        android:icon="@drawable/icon_navbar_favourites"/>
+    <item
+        android:id="@+id/navbar_account"
+        android:title="ACCOUNT"
+        android:icon="@drawable/icon_navbar_account"/>
+</menu>

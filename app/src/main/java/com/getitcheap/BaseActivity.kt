@@ -2,17 +2,18 @@ package com.getitcheap
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class BaseActivity : AppCompatActivity() {
-    lateinit var navBar : RadioGroup
-
-    var sButtonFragmentMap = hashMapOf<Int, Fragment>(
-        R.id.nav_button_for_sale to ItemsFragment(),
-        R.id.nav_button_for_rent to ItemsFragment(),
-        R.id.nav_button_account to AccountFragment()
+    lateinit var navBar : BottomNavigationView
+    var sButtonFragmentMap = mapOf<Int, Fragment>(
+        R.id.navbar_items to ItemsFragment(),
+        R.id.navbar_favourites to ItemsFragment(),
+        R.id.navbar_account to AccountFragment()
     )
 
 
@@ -20,12 +21,9 @@ class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
         navBar = findViewById(R.id.nav_bar)
-        navBar.setOnCheckedChangeListener { group, checkedId ->
-            sButtonFragmentMap.get(checkedId)?.let { switchBaseFragment(it) }
-        }
-        navBar.check(R.id.nav_button_for_rent)
-
+        navBar.setOnNavigationItemSelectedListener()
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -35,7 +33,7 @@ class BaseActivity : AppCompatActivity() {
         super.onResumeFragments()
     }
 
-    fun switchBaseFragment(fragment: Fragment) {
+    private fun switchBaseFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(R.id.base_fragment_container, fragment)
             .commitNow()
     }
