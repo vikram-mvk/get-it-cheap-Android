@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="GlobalStyle">
+        <item name="android:fontFamily">@font/font_primary</item>
+        <item name="android:background">@color/primaryBackground</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="GetItCheapButton">
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="GetItCheapNavBar">
+        <item name="android:background">@color/primaryLabel</item>
+    </style>
+
+
+    <style name="GetItCheapNavBarButton">
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:button">@null</item>
+        <item name="android:topLeftRadius">20dp</item>
+        <item name="android:drawableTop">@drawable/icon_navbar_items</item>
+        <item name="itemRippleColor">@color/mtrl_bottom_nav_colored_ripple_color</item>
+        <item name="android:layout_marginHorizontal">10dp</item>
+        <item name="android:gravity">center</item>
+
+    </style>
+
+
+    <style name="GetItCheapTextInput">
+
+    </style>
+
+
+</resources>
