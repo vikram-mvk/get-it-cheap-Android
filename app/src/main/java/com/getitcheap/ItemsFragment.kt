@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -22,6 +24,8 @@ class ItemsFragment : Fragment() {
 
     private var param1: String? = null
     lateinit var itemsRecyclerView: RecyclerView
+    lateinit var searchLayout: LinearLayout
+    lateinit var searchView: androidx.appcompat.widget.SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +45,19 @@ class ItemsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Find all views
+        searchLayout = view.findViewById(R.id.search_layout)
+        searchView = view.findViewById(R.id.search_input)
         itemsRecyclerView = view.findViewById(R.id.items_recycler_view)
+
+        // Set up actions
         itemsRecyclerView.adapter = ItemsRecyclerViewAdapter(view.context)
         itemsRecyclerView.setHasFixedSize(true)
         itemsRecyclerView.layoutManager = LinearLayoutManager(view.context)
+        searchLayout.setOnClickListener {
+            Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show()
+            searchView.onActionViewExpanded()
+        }
 
     }
 

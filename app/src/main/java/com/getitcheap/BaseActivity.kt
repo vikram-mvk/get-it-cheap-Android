@@ -21,7 +21,11 @@ class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
         navBar = findViewById(R.id.nav_bar)
-        navBar.setOnNavigationItemSelectedListener()
+        navBar.setOnNavigationItemSelectedListener {
+            sButtonFragmentMap[it.itemId]?.let { f -> switchBaseFragment(f) }
+            return@setOnNavigationItemSelectedListener true
+        }
+        navBar.selectedItemId = R.id.navbar_items
     }
 
 

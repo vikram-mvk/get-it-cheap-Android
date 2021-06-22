@@ -3,7 +3,8 @@
     <item
         android:id="@+id/navbar_items"
         android:title="ITEMS"
-        android:icon="@drawable/icon_navbar_items"/>
+        android:icon="@drawable/icon_navbar_items"
+        />
     <item
         android:id="@+id/navbar_favourites"
         android:title="FAVOURITES"
