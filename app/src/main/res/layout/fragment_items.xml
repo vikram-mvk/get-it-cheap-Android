@@ -8,6 +8,7 @@
     tools:context=".ItemsFragment"
     android:orientation="vertical"
     android:weightSum="1"
+    style="@style/GlobalStyle"
     >
     <LinearLayout
         android:id="@+id/search_layout"
