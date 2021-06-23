@@ -26,40 +26,5 @@
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/navbar_items"
         />
-    <!--
-    <RadioGroup
-        style="@style/GetItCheapNavBar"
-        android:id="@+id/nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:orientation="horizontal"
-        >
-        <RadioButton
-            android:id="@+id/nav_button_for_rent"
-            style="@style/GetItCheapNavBarButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="For Rent"
-            />
-        <RadioButton
-            android:id="@+id/nav_button_for_sale"
-            style="@style/GetItCheapNavBarButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="For Sale"
-            />
-        <RadioButton
-            android:id="@+id/nav_button_account"
-            style="@style/GetItCheapNavBarButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Account"
-            />
-
-    </RadioGroup>
-    -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
