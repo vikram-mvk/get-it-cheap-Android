@@ -1,6 +1,7 @@
 package com.getitcheap
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,12 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.getitcheap.web_requests.RetroFitService
+import com.getitcheap.web_requests.items.ItemsApi
+import com.getitcheap.web_requests.items.ItemsModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -51,14 +58,34 @@ class ItemsFragment : Fragment() {
         itemsRecyclerView = view.findViewById(R.id.items_recycler_view)
 
         // Set up actions
-        itemsRecyclerView.adapter = ItemsRecyclerViewAdapter(view.context)
-        itemsRecyclerView.setHasFixedSize(true)
-        itemsRecyclerView.layoutManager = LinearLayoutManager(view.context)
         searchLayout.setOnClickListener {
             Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show()
             searchView.onActionViewExpanded()
         }
 
+        val itemsApi = RetroFitService.useApi(ItemsApi::class.java)
+        val getAllItemsRequest = itemsApi.getAllItems()
+        val getAllItemsResponse = getAllItemsRequest.enqueue(object: Callback<List<ItemsModel>> {
+            override fun onFailure(call: Call<List<ItemsModel>>, t: Throwable) {
+                Log.d("Response", "failure")
+            }
+
+            override fun onResponse(
+                call: Call<List<ItemsModel>>,
+                response: Response<List<ItemsModel>>
+            ) {
+                itemsRecyclerView.apply {
+                    setHasFixedSize(true)
+                    layoutManager = LinearLayoutManager(view.context)
+                    adapter = ItemsAdapter(response.body()!!)
+
+
+
+
+                }
+            }
+
+        })
     }
 
     companion object {
