@@ -1,4 +1,4 @@
-package com.getitcheap.web_requests
+package com.getitcheap.web_api
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

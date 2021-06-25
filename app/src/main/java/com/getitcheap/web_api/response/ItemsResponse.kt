@@ -1,6 +1,6 @@
-package com.getitcheap.web_requests.items
+package com.getitcheap.web_api.response
 
-data class ItemsModel(
+data class ItemsResponse(
     val itemName: String,
     val description: String,
     val category: String,

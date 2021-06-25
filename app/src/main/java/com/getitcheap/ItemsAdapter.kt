@@ -1,7 +1,5 @@
 package com.getitcheap
 
-import android.content.Context
-import android.service.autofill.TextValueSanitizer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.getitcheap.web_requests.items.ItemsModel
+import com.getitcheap.web_api.response.ItemsResponse
 
-class ItemsAdapter(private val items: List<ItemsModel>) : RecyclerView.Adapter<ItemsAdapter.ItemsViewHolder>() {
+class ItemsAdapter(private val items: List<ItemsResponse>) : RecyclerView.Adapter<ItemsAdapter.ItemsViewHolder>() {
 
     inner class ItemsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val itemNameTextView : TextView =  itemView.findViewById(R.id.item_name_text)
@@ -19,7 +17,7 @@ class ItemsAdapter(private val items: List<ItemsModel>) : RecyclerView.Adapter<I
         private val itemPriceTextView : TextView = itemView.findViewById(R.id.item_price_text)
         private val itemImage: ImageView = itemView.findViewById(R.id.item_image)
 
-        fun bind(item: ItemsModel) {
+        fun bind(item: ItemsResponse) {
             itemNameTextView.text = item.itemName
             itemDescriptionTextView.text = item.description
             itemPriceTextView.text = item.price

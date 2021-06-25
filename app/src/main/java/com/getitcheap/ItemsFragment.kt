@@ -10,9 +10,9 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.getitcheap.web_requests.RetroFitService
-import com.getitcheap.web_requests.items.ItemsApi
-import com.getitcheap.web_requests.items.ItemsModel
+import com.getitcheap.web_api.RetroFitService
+import com.getitcheap.web_api.api_definition.ItemsApi
+import com.getitcheap.web_api.response.ItemsResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,12 +52,12 @@ class ItemsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Find all views
+        // Find views
         searchLayout = view.findViewById(R.id.search_layout)
         searchView = view.findViewById(R.id.search_input)
         itemsRecyclerView = view.findViewById(R.id.items_recycler_view)
 
-        // Set up actions
+        // Do stuff with views
         searchLayout.setOnClickListener {
             Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show()
             searchView.onActionViewExpanded()
@@ -65,26 +65,22 @@ class ItemsFragment : Fragment() {
 
         val itemsApi = RetroFitService.useApi(ItemsApi::class.java)
         val getAllItemsRequest = itemsApi.getAllItems()
-        val getAllItemsResponse = getAllItemsRequest.enqueue(object: Callback<List<ItemsModel>> {
-            override fun onFailure(call: Call<List<ItemsModel>>, t: Throwable) {
-                Log.d("Response", "failure")
+
+        getAllItemsRequest.enqueue(object: Callback<List<ItemsResponse>> {
+            override fun onFailure(call: Call<List<ItemsResponse>>, t: Throwable) {
+                Log.d("getItems Response", "failure")
             }
 
             override fun onResponse(
-                call: Call<List<ItemsModel>>,
-                response: Response<List<ItemsModel>>
+                call: Call<List<ItemsResponse>>,
+                response: Response<List<ItemsResponse>>
             ) {
                 itemsRecyclerView.apply {
                     setHasFixedSize(true)
                     layoutManager = LinearLayoutManager(view.context)
                     adapter = ItemsAdapter(response.body()!!)
-
-
-
-
                 }
             }
-
         })
     }
 
