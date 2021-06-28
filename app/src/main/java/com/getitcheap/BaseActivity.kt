@@ -2,9 +2,6 @@ package com.getitcheap
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -13,6 +10,7 @@ class BaseActivity : AppCompatActivity() {
     var sButtonFragmentMap = mapOf<Int, Fragment>(
         R.id.navbar_items to ItemsFragment(),
         R.id.navbar_favourites to ItemsFragment(),
+        R.id.navbar_new_item to AddNewItemFragment(),
         R.id.navbar_account to AccountFragment()
     )
 
@@ -42,4 +40,8 @@ class BaseActivity : AppCompatActivity() {
             .commitNow()
     }
 
+    companion object {
+        @JvmStatic
+        var token:String = "Bearer %s"
+    }
 }

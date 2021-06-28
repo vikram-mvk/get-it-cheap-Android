@@ -1,7 +1,6 @@
 package com.getitcheap
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +8,13 @@ import android.view.ViewGroup
 import com.getitcheap.web_api.RetroFitService
 import com.getitcheap.web_api.api_definition.UsersApi
 import com.getitcheap.web_api.request.SigninRequest
+import com.getitcheap.web_api.request.SignupRequest
+import com.getitcheap.web_api.response.MessageResponse
 import com.getitcheap.web_api.response.SigninResponse
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textview.MaterialTextView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,9 +34,16 @@ class AccountFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    var isSignIn: Boolean = true
+    lateinit var firstNameInputLayout : TextInputLayout
+    lateinit var lastNameInputLayout : TextInputLayout
     lateinit var emailInput : TextInputEditText
     lateinit var passwordInput : TextInputEditText
-    lateinit var signinButton : MaterialButton
+    lateinit var buttonTop : MaterialButton
+    lateinit var buttonBottom : MaterialButton
+    lateinit var onSignIn : View.OnClickListener
+    lateinit var onSignUp : View.OnClickListener
+    lateinit var labelForButtonBottom : MaterialTextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,36 +64,85 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Find views
-        emailInput = view.findViewById(R.id.email_input)
-        passwordInput = view.findViewById(R.id.password_input)
-        signinButton = view.findViewById(R.id.sign_in_button)
+        // Always Visible views
+        emailInput = view.findViewById(R.id.category_input)
+        passwordInput = view.findViewById(R.id.price_input)
+        buttonTop = view.findViewById(R.id.button_top)
+        buttonBottom = view.findViewById(R.id.button_bottom)
+        labelForButtonBottom = view.findViewById(R.id.label_for_button_bottom)
+
+        // Conditionally Visible views
+        firstNameInputLayout = view.findViewById(R.id.item_name_input_layout)
+        lastNameInputLayout = view.findViewById(R.id.description_input_layout)
 
         // Setup up Api Requests
         val userApi = RetroFitService.useApi(UsersApi::class.java)
 
-        // Do stuff with views
-        signinButton.setOnClickListener {
+        // set up Listeners
+        onSignIn = View.OnClickListener {
             val email = emailInput.text.toString()
             val password = passwordInput.text.toString()
             val signInRequest = userApi.Signin(SigninRequest(email = email, password = password))
-            println(email)
-            println(password)
-            signInRequest.enqueue(object: Callback<SigninResponse>{
+            signInRequest.enqueue(object: Callback<SigninResponse> {
                 override fun onFailure(call: Call<SigninResponse>, t: Throwable) {
-                    Log.d("Signin Response", "failure")
+                    Utilities.showSnackBarForFailure(view, "Sign in failed")
                 }
-
                 override fun onResponse(call: Call<SigninResponse>, response: Response<SigninResponse>) {
-                    Log.d("Signin Response", "success")
+                    Utilities.showSnackBarForSuccess(view, "Sign in successful")
                     val signInResponse = response.body()
                     println(signInResponse?.jwt)
+                    signInResponse?.let { res -> BaseActivity.token = BaseActivity.token.format(res.jwt) }
                 }
-
             })
         }
 
+        onSignUp = View.OnClickListener {
+            val firstName = firstNameInputLayout.editText?.text.toString()
+            val lastName = lastNameInputLayout.editText?.text.toString()
+            val email = emailInput.text.toString()
+            val password = passwordInput.text.toString()
+            val signUpRequest = userApi.Signup(SignupRequest(firstName=firstName,
+                lastName = lastName, email = email, password = password))
+            signUpRequest.enqueue(object: Callback<MessageResponse>{
+                override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
+                    Utilities.showSnackBarForFailure(view, "Sign up Failed")
+                }
+                override fun onResponse(
+                    call: Call<MessageResponse>,
+                    response: Response<MessageResponse>
+                ) {
+                    println(response.body()?.message)
+                    Utilities.showSnackBarForSuccess(view, "Sign up successful")
+                }
+            })
+        }
 
+        if (isSignIn) setupViewForSignIn() else setupViewForSignUp()
+    }
+
+
+    private fun setupViewForSignIn() {
+        firstNameInputLayout.visibility = View.GONE
+        lastNameInputLayout.visibility = View.GONE
+        buttonTop.text = "Sign In"
+        labelForButtonBottom.text = "Don't have an account ?"
+        buttonBottom.text = "Sign Up"
+        buttonTop.setOnClickListener(onSignIn)
+        buttonBottom.setOnClickListener {
+            setupViewForSignUp()
+        }
+    }
+
+    private fun setupViewForSignUp() {
+        firstNameInputLayout.visibility = View.VISIBLE
+        lastNameInputLayout.visibility = View.VISIBLE
+        buttonTop.text = "Sign Up"
+        labelForButtonBottom.text = "Already have an account ?"
+        buttonBottom.text = "Sign In"
+        buttonTop.setOnClickListener(onSignUp)
+        buttonBottom.setOnClickListener {
+            setupViewForSignIn()
+        }
     }
 
     companion object {

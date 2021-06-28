@@ -14,99 +14,136 @@
         android:layout_height="match_parent"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="45dp"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingTop="100dp"
-            android:paddingBottom="30dp"
-            android:paddingHorizontal="10dp"
+            android:padding="15dp"
             >
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/email_input_layout"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:textInputLayoutFocusedRectEnabled="true"
-                style="@style/GetItCheapTextInputLayout"
-                android:hint="Email"
-                >
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email_input"
-                android:layout_height="wrap_content"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/item_name_input_layout"
+                style="@style/GetItCheapTextInputLayout"
                 android:layout_width="match_parent"
-                app:textInputLayoutFocusedRectEnabled="true"
-                android:fontFamily="@font/font_primary"
-                />
+                android:layout_height="wrap_content"
+                android:hint="First name"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:textInputLayoutFocusedRectEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/first_name_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/font_primary"
+                    app:textInputLayoutFocusedRectEnabled="true" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/password_input_layout"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/email_input_layout"
-                app:textInputLayoutFocusedRectEnabled="true"
+                android:id="@+id/description_input_layout"
                 style="@style/GetItCheapTextInputLayout"
-                android:hint="Password"
-                >
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Last name"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/item_name_input_layout"
+                app:textInputLayoutFocusedRectEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/password_input"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/description_input"
                     android:layout_width="match_parent"
-                    app:textInputLayoutFocusedRectEnabled="true"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/font_primary"
-                    />
+                    app:textInputLayoutFocusedRectEnabled="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/category_input_layout"
+                style="@style/GetItCheapTextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/description_input_layout"
+                app:textInputLayoutFocusedRectEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/category_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/font_primary"
+                    app:textInputLayoutFocusedRectEnabled="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/price_input_layout"
+                style="@style/GetItCheapTextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/category_input_layout"
+                app:textInputLayoutFocusedRectEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/price_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_primary"
+                        app:textInputLayoutFocusedRectEnabled="true" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/sign_in_button"
+                android:id="@+id/button_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="20dp"
-                app:cornerRadius="10dp"
-                android:text="Sign In"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/password_input_layout"
-                app:backgroundTint="@color/primaryButton"
                 android:fontFamily="@font/font_primary"
-                />
+                android:text="Sign In"
+                app:backgroundTint="@color/primaryButton"
+                app:cornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/price_input_layout" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/dont_have_an_account"
-                android:layout_width="match_parent"
+                android:id="@+id/label_for_button_bottom"
+                style="@style/GlobalStyle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:textAlignment="center"
-                style="@style/GlobalStyle"
                 android:text="Don't have an account ? "
-                android:layout_marginTop="210dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sign_in_button"
-                app:layout_constraintBottom_toTopOf="@id/sign_up_button"
+                android:textAlignment="center"
                 android:textSize="16dp"
-                />
+                app:layout_constraintBottom_toTopOf="@id/button_bottom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/button_top"
+                app:layout_constraintVertical_bias="0.95" />
+
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/sign_up_button"
+                android:id="@+id/button_bottom"
                 android:layout_width="150dp"
                 android:layout_height="45dp"
-                android:text="Sign up"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dont_have_an_account"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:cornerRadius="10dp"
-                app:backgroundTint="@color/primaryButton"
                 android:fontFamily="@font/font_primary"
+                android:text="Sign up"
+                app:backgroundTint="@color/primaryButton"
+                app:cornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
 
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>

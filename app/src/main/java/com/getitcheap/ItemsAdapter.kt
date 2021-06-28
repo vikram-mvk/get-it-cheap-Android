@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.getitcheap.web_api.response.ItemsResponse
+import java.lang.Exception
 
 class ItemsAdapter(private val items: List<ItemsResponse>) : RecyclerView.Adapter<ItemsAdapter.ItemsViewHolder>() {
 
@@ -21,7 +22,12 @@ class ItemsAdapter(private val items: List<ItemsResponse>) : RecyclerView.Adapte
             itemNameTextView.text = item.itemName
             itemDescriptionTextView.text = item.description
             itemPriceTextView.text = item.price
-            Glide.with(itemView.context).load(item.image).into(itemImage)
+
+            Glide.with(itemView.context)
+                .load(item.image)
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .error(R.drawable.ic_launcher_foreground)
+                .into(itemImage)
         }
     }
 

@@ -1,8 +1,8 @@
-package com.getitcheap.web_api.response
+package com.getitcheap.web_api.request
 
 import com.google.gson.annotations.SerializedName
 
-data class ItemsResponse(
+data class NewItemRequest(
     @SerializedName("itemName") val itemName: String,
     @SerializedName("description") val description: String,
     @SerializedName("category") val category: String,

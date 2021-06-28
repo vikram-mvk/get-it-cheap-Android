@@ -6,34 +6,82 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ItemsFragment"
-    android:orientation="vertical"
-    android:weightSum="1"
     style="@style/GlobalStyle"
     >
-    <LinearLayout
-        android:id="@+id/search_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        >
+
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:queryHint="Search GetItCheap..."
         android:iconifiedByDefault="false"
+        android:background="@drawable/border_background"
+        android:layout_margin="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:maxWidth="10000dp"
         >
     </androidx.appcompat.widget.SearchView>
-    </LinearLayout>
 
+    <HorizontalScrollView
+        android:id="@+id/filters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/search_input"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="5dp"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primaryBackground"
+            >
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="For Sale"
+            android:layout_marginHorizontal="8dp"
+            android:fontFamily="@font/font_primary"
+            app:cornerRadius="25dp"
+            app:buttonTint="@color/primaryButton"
+            />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="For Rent"
+            android:layout_marginHorizontal="8dp"
+            android:fontFamily="@font/font_primary"
+            app:cornerRadius="25dp"
+            app:buttonTint="@color/primaryButton"
+            />
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:text="Sort"
+                android:layout_marginHorizontal="8dp"
+                app:backgroundTint="@color/primaryButton"
+                android:fontFamily="@font/font_primary"
+                app:cornerRadius="25dp"
+
+                />
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:text="Filter"
+                android:layout_marginHorizontal="8dp"
+                app:backgroundTint="@color/primaryButton"
+                android:fontFamily="@font/font_primary"
+                app:cornerRadius="25dp"
+                />
+        </LinearLayout>
+    </HorizontalScrollView>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/items_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/search_layout"
+        app:layout_constraintTop_toBottomOf="@id/filters"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

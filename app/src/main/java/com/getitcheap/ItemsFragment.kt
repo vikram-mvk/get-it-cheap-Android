@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.getitcheap.web_api.RetroFitService
 import com.getitcheap.web_api.api_definition.ItemsApi
 import com.getitcheap.web_api.response.ItemsResponse
+import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,7 +32,6 @@ class ItemsFragment : Fragment() {
 
     private var param1: String? = null
     lateinit var itemsRecyclerView: RecyclerView
-    lateinit var searchLayout: LinearLayout
     lateinit var searchView: androidx.appcompat.widget.SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,22 +53,15 @@ class ItemsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Find views
-        searchLayout = view.findViewById(R.id.search_layout)
         searchView = view.findViewById(R.id.search_input)
         itemsRecyclerView = view.findViewById(R.id.items_recycler_view)
 
-        // Do stuff with views
-        searchLayout.setOnClickListener {
-            Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show()
-            searchView.onActionViewExpanded()
-        }
 
         val itemsApi = RetroFitService.useApi(ItemsApi::class.java)
         val getAllItemsRequest = itemsApi.getAllItems()
 
         getAllItemsRequest.enqueue(object: Callback<List<ItemsResponse>> {
             override fun onFailure(call: Call<List<ItemsResponse>>, t: Throwable) {
-                Log.d("getItems Response", "failure")
             }
 
             override fun onResponse(
