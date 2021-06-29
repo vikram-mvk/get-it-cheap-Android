@@ -62,12 +62,16 @@ class ItemsFragment : Fragment() {
 
         getAllItemsRequest.enqueue(object: Callback<List<ItemsResponse>> {
             override fun onFailure(call: Call<List<ItemsResponse>>, t: Throwable) {
+                Utilities.showSnackBarForFailure(view, "Error getting Items from Server")
             }
 
             override fun onResponse(
                 call: Call<List<ItemsResponse>>,
                 response: Response<List<ItemsResponse>>
             ) {
+                if (response.code() != 200) {
+                    Utilities.showSnackBarForFailure(view, "Error getting Items from Server")
+                }
                 itemsRecyclerView.apply {
                     setHasFixedSize(true)
                     layoutManager = LinearLayoutManager(view.context)

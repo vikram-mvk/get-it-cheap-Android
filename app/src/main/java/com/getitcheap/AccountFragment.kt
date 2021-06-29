@@ -88,7 +88,11 @@ class AccountFragment : Fragment() {
                     Utilities.showSnackBarForFailure(view, "Sign in failed")
                 }
                 override fun onResponse(call: Call<SigninResponse>, response: Response<SigninResponse>) {
-                    Utilities.showSnackBarForSuccess(view, "Sign in successful")
+                    if (response.code() == 200) {
+                        Utilities.showSnackBarForSuccess(view, "Sign in successful")
+                    } else {
+                        Utilities.showSnackBarForFailure(view, "Sign in failed")
+                    }
                     val signInResponse = response.body()
                     println(signInResponse?.jwt)
                     signInResponse?.let { res -> BaseActivity.token = BaseActivity.token.format(res.jwt) }
@@ -111,8 +115,11 @@ class AccountFragment : Fragment() {
                     call: Call<MessageResponse>,
                     response: Response<MessageResponse>
                 ) {
-                    println(response.body()?.message)
-                    Utilities.showSnackBarForSuccess(view, "Sign up successful")
+                    if (response.code() == 200) {
+                        Utilities.showSnackBarForSuccess(view, "Sign up successful")
+                    } else {
+                        Utilities.showSnackBarForFailure(view, "Sign up Failed")
+                    }
                 }
             })
         }
