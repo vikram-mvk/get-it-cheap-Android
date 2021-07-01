@@ -42,6 +42,12 @@ class AddNewItemFragment : Fragment() {
     lateinit var rentalBasis : Spinner
     lateinit var contact : TextInputEditText
     lateinit var submitYourItem: MaterialButton
+    var rentalBasisTypes = mapOf(
+        "Per hour" to "per_hour",
+        "Per day" to "per_day",
+        "Per week" to "per_week",
+        "Per month" to "per_month"
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,9 +82,8 @@ class AddNewItemFragment : Fragment() {
 
         // Set up adapters for spinner
         val categories = listOf("Electronics", "Outdoor", "Clothing")
-        val rentalBasisTypes = listOf("per_hour", "per_day", "per_week", "per_month")
         category.adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, categories)
-        rentalBasis.adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, rentalBasisTypes)
+        rentalBasis.adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_dropdown_item, rentalBasisTypes.keys.toTypedArray())
 
         // set up the Items Api
         val itemsApi = RetroFitService.useApi(ItemsApi::class.java)
@@ -88,7 +93,7 @@ class AddNewItemFragment : Fragment() {
             val category = category.selectedItem.toString()
             val itemType = "for_rent"
             val price = price.text.toString()
-            val rentalBasis = rentalBasis.selectedItem.toString()
+            val rentalBasis = rentalBasisTypes.getOrDefault(rentalBasis.selectedItem.toString(), "default")
             val contact = contact.text.toString()
             val token = BaseActivity.token
             val newItemRequest = itemsApi.newItem(token, NewItemRequest(
