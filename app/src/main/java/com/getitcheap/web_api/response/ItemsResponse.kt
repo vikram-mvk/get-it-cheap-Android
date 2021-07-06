@@ -9,8 +9,10 @@ data class ItemsResponse(
     @SerializedName("itemType") val itemType: String,
     @SerializedName("image") val image: String,
     @SerializedName("price") val price: String,
-    @SerializedName("rentalBasis") val rentalBasis: String,
+    @SerializedName("rentalBasis") val rentalBasis: String?,
     @SerializedName("userId") val userId: Long,
     @SerializedName("username") val username: String,
-    @SerializedName("contact") val contact: String
-)
+    @SerializedName("contact") val contact: String,
+    @SerializedName("datePosted") val datePosted: String
+
+    )

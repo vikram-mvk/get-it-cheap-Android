@@ -8,8 +8,8 @@ data class NewItemRequest(
     @SerializedName("category") val category: String,
     @SerializedName("itemType") val itemType: String,
     @SerializedName("image") val image: String,
-    @SerializedName("price") val price: String,
-    @SerializedName("rentalBasis") val rentalBasis: String,
+    @SerializedName("price") val price: Double,
+    @SerializedName("rentalBasis") val rentalBasis: String?,
     @SerializedName("userId") val userId: Long,
     @SerializedName("username") val username: String,
     @SerializedName("contact") val contact: String

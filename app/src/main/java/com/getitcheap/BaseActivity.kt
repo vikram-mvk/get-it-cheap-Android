@@ -3,6 +3,9 @@ package com.getitcheap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.getitcheap.user.AccountFragment
+import com.getitcheap.item.AddNewItemFragment
+import com.getitcheap.item.ItemsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class BaseActivity : AppCompatActivity() {
@@ -26,6 +29,15 @@ class BaseActivity : AppCompatActivity() {
         navBar.selectedItemId = R.id.navbar_items
     }
 
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            super.onBackPressed()
+        } else {
+            supportFragmentManager.popBackStack()
+        }
+
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -37,11 +49,7 @@ class BaseActivity : AppCompatActivity() {
 
     private fun switchBaseFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(R.id.base_fragment_container, fragment)
-            .commitNow()
+            .commit()
     }
 
-    companion object {
-        @JvmStatic
-        var token:String = "Bearer %s"
-    }
 }

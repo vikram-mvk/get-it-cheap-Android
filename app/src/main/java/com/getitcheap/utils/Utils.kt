@@ -1,11 +1,15 @@
-package com.getitcheap
+package com.getitcheap.utils
 
 import android.graphics.Color
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.getitcheap.R
 import com.google.android.material.snackbar.Snackbar
 
-class Utilities {
+class Utils {
 
     companion object {
         @JvmStatic
@@ -29,6 +33,7 @@ class Utilities {
                 Log.e("Exception in Snackbar", e.toString())
             }
         }
+
     }
 
 }

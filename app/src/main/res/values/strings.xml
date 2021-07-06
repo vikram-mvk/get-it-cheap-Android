@@ -2,4 +2,6 @@
     <string name="app_name">Get It Cheap</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_items_available">No items available</string>
+    <string name="fetching_items">Fetching items...</string>
 </resources>

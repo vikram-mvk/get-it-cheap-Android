@@ -1,11 +1,17 @@
-package com.getitcheap
+package com.getitcheap.user
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.getitcheap.R
+import com.getitcheap.data.SharedPrefs
+import com.getitcheap.utils.Utils
 import com.getitcheap.web_api.RetroFitService
+import com.getitcheap.web_api.RetroFitService.userApi
 import com.getitcheap.web_api.api_definition.UsersApi
 import com.getitcheap.web_api.request.SigninRequest
 import com.getitcheap.web_api.request.SignupRequest
@@ -34,7 +40,7 @@ class AccountFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    var isSignIn: Boolean = true
+    lateinit var sharedPrefsInstance : SharedPrefs
     lateinit var firstNameInputLayout : TextInputLayout
     lateinit var lastNameInputLayout : TextInputLayout
     lateinit var emailInput : TextInputEditText
@@ -44,6 +50,9 @@ class AccountFragment : Fragment() {
     lateinit var onSignIn : View.OnClickListener
     lateinit var onSignUp : View.OnClickListener
     lateinit var labelForButtonBottom : MaterialTextView
+    lateinit var profileLayout : LinearLayout
+    lateinit var signInSignOutLayout: ConstraintLayout
+    lateinit var signOutButton: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,40 +73,48 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Always Visible views
+        signInSignOutLayout = view.findViewById(R.id.signin_singout_layout)
+        profileLayout = view.findViewById(R.id.profile_layout)
+        sharedPrefsInstance = SharedPrefs.getInstance(view.context)
+
         emailInput = view.findViewById(R.id.category_input)
         passwordInput = view.findViewById(R.id.price_input)
         buttonTop = view.findViewById(R.id.button_top)
         buttonBottom = view.findViewById(R.id.button_bottom)
         labelForButtonBottom = view.findViewById(R.id.label_for_button_bottom)
-
-        // Conditionally Visible views
         firstNameInputLayout = view.findViewById(R.id.item_name_input_layout)
         lastNameInputLayout = view.findViewById(R.id.description_input_layout)
-
-        // Setup up Api Requests
-        val userApi = RetroFitService.useApi(UsersApi::class.java)
+        signOutButton = view.findViewById(R.id.profile_signout)
 
         // set up Listeners
         onSignIn = View.OnClickListener {
             val email = emailInput.text.toString()
             val password = passwordInput.text.toString()
-            val signInRequest = userApi.Signin(SigninRequest(email = email, password = password))
-            signInRequest.enqueue(object: Callback<SigninResponse> {
-                override fun onFailure(call: Call<SigninResponse>, t: Throwable) {
-                    Utilities.showSnackBarForFailure(view, "Sign in failed")
-                }
-                override fun onResponse(call: Call<SigninResponse>, response: Response<SigninResponse>) {
-                    if (response.code() == 200) {
-                        Utilities.showSnackBarForSuccess(view, "Sign in successful")
-                    } else {
-                        Utilities.showSnackBarForFailure(view, "Sign in failed")
+            userApi.Signin(SigninRequest(email = email, password = password))
+                .enqueue(object: Callback<SigninResponse> {
+                    override fun onFailure(call: Call<SigninResponse>, t: Throwable) {
+                        Utils.showSnackBarForFailure(view, "Sign in failed")
                     }
-                    val signInResponse = response.body()
-                    println(signInResponse?.jwt)
-                    signInResponse?.let { res -> BaseActivity.token = BaseActivity.token.format(res.jwt) }
-                }
+                    override fun onResponse(call: Call<SigninResponse>, response: Response<SigninResponse>) {
+                        if (response.code() == 200) {
+                            Utils.showSnackBarForSuccess(view, "Sign in successful")
+                        } else {
+                            Utils.showSnackBarForFailure(view, "Sign in failed")
+                        }
+                        val signInResponse = response.body()
+                        val token = signInResponse?.jwt
+                        val username = signInResponse?.username
+                        val email = signInResponse?.email
+                        val userId = signInResponse?.userId
+                        val sharedPrefs = SharedPrefs.getInstance(view.context)
+                        token?.let { sharedPrefs.setJwtToken(token) }
+                        username?.let { sharedPrefs.setUsername(username) }
+                        email?.let { sharedPrefs.setEmail(email) }
+                        userId?.let { sharedPrefs.setUserId(userId) }
+                        updateLayout()
+                    }
             })
+
         }
 
         onSignUp = View.OnClickListener {
@@ -105,26 +122,33 @@ class AccountFragment : Fragment() {
             val lastName = lastNameInputLayout.editText?.text.toString()
             val email = emailInput.text.toString()
             val password = passwordInput.text.toString()
-            val signUpRequest = userApi.Signup(SignupRequest(firstName=firstName,
+            userApi.Signup(SignupRequest(firstName=firstName,
                 lastName = lastName, email = email, password = password))
-            signUpRequest.enqueue(object: Callback<MessageResponse>{
-                override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
-                    Utilities.showSnackBarForFailure(view, "Sign up Failed")
-                }
-                override fun onResponse(
-                    call: Call<MessageResponse>,
-                    response: Response<MessageResponse>
-                ) {
-                    if (response.code() == 200) {
-                        Utilities.showSnackBarForSuccess(view, "Sign up successful")
-                    } else {
-                        Utilities.showSnackBarForFailure(view, "Sign up Failed")
+                .enqueue(object: Callback<MessageResponse>{
+                    override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
+                        Utils.showSnackBarForFailure(view, "Sign up Failed")
                     }
-                }
-            })
+                    override fun onResponse(
+                        call: Call<MessageResponse>,
+                        response: Response<MessageResponse>
+                    ) {
+                        if (response.code() == 200) {
+                            Utils.showSnackBarForSuccess(view, "Sign up successful")
+                            setupViewForSignIn()
+                        } else {
+                            Utils.showSnackBarForFailure(view, "Sign up Failed")
+                        }
+                    }
+                })
         }
 
-        if (isSignIn) setupViewForSignIn() else setupViewForSignUp()
+        signOutButton.setOnClickListener {
+            sharedPrefsInstance.clearAll()
+            updateLayout()
+        }
+
+        updateLayout()
+
     }
 
 
@@ -149,6 +173,18 @@ class AccountFragment : Fragment() {
         buttonTop.setOnClickListener(onSignUp)
         buttonBottom.setOnClickListener {
             setupViewForSignIn()
+        }
+    }
+
+    fun updateLayout() {
+        val isLoggedIn = sharedPrefsInstance.getEmail().length > 0
+        if (isLoggedIn) {
+            profileLayout.visibility = View.VISIBLE
+            signInSignOutLayout.visibility = View.GONE
+        } else {
+            profileLayout.visibility = View.GONE
+            signInSignOutLayout.visibility = View.VISIBLE
+            setupViewForSignIn() // By default show SignIn view
         }
     }
 

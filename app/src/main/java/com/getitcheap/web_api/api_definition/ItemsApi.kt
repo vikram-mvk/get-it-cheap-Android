@@ -9,9 +9,13 @@ import retrofit2.http.*
 interface ItemsApi {
 
     @GET("/items")
-    fun getAllItems() : Call<List<ItemsResponse>>
+    fun getItems(@Query("type") itemTypes: String?, @Query("category") categories: String?) : Call<List<ItemsResponse>>
+
+    @GET("/items/search")
+    fun searchItems(@Query("key") searchKey: String) : Call<List<ItemsResponse>>
 
     @POST("/item")
-    fun newItem(@Header("Authorization") token: String, @Body request: NewItemRequest) : Call<MessageResponse>
+    fun newItem(@Header("Authorization") token: String?, @Body request: NewItemRequest) : Call<MessageResponse>
+
 
 }

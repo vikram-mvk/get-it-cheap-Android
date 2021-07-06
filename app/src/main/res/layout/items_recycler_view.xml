@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
     <com.google.android.material.card.MaterialCardView
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,63 +26,86 @@
                 android:contentDescription="Description"
                 />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="15dp"
+                >
 
                 <!-- Title, secondary and supporting text -->
                 <TextView
+                    android:layout_alignParentStart="true"
+                    style="@style/GetItCheapTextView.Bold"
+                    android:textSize="24sp"
                     android:id="@+id/item_name_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="title"
-                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    tools:text="title"
                     />
+
                 <TextView
                     android:id="@+id/item_description_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_below="@id/item_name_text"
+                    style="@style/GetItCheapTextView"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:singleLine="false"
+                    android:textSize="16sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
                     android:layout_marginTop="8dp"
-                    android:text="description"
-                    android:textAppearance="?attr/textAppearanceBody2"
-                    android:textColor="?android:attr/textColorSecondary"
-                    />
-                <TextView
-                    android:id="@+id/item_price_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="price"
-                    android:textAppearance="?attr/textAppearanceBody2"
+                    tools:text="description"
                     android:textColor="?android:attr/textColorSecondary"
                     />
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/item_type_text"
+                        android:layout_below="@id/item_description_text"
+                        android:layout_alignParentEnd="true"
+                        style="@style/GetItCheapTextView.Bold"
+                        android:textSize="14sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="For Rent"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="?android:attr/textColorSecondary"
+                        />
 
-            <!-- Buttons -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:orientation="horizontal">
-                <com.google.android.material.button.MaterialButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="action_1"
-                    style="?attr/borderlessButtonStyle"
+                    <TextView
+                        android:id="@+id/item_price_text"
+                        android:layout_below="@id/item_type_text"
+                        android:layout_toLeftOf="@id/item_rental_basis_text"
+                        android:layout_alignWithParentIfMissing="true"
+                        style="@style/GetItCheapTextView.Bold"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="$15.5"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="?android:attr/textColorSecondary"
                     />
-                <com.google.android.material.button.MaterialButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="action_2"
-                    style="?attr/borderlessButtonStyle"
-                    />
-            </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/item_rental_basis_text"
+                        android:layout_below="@id/item_type_text"
+                        android:layout_alignParentEnd="true"
+                        style="@style/GetItCheapTextView.Bold"
+                        android:textSize="14sp"
+                        android:paddingLeft="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Per hour"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        />
+
+
+            </RelativeLayout>
 
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
-</RelativeLayout>

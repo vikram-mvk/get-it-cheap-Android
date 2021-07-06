@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".item.ItemDetailsFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <!-- Media -->
+                <ViewAnimator
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+                    <ImageView
+                        android:id="@+id/item_image_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="194dp"
+                        app:srcCompat="@drawable/ic_launcher_foreground"
+                        android:scaleType="fitCenter"
+                        />
+                    <ImageView
+                        android:id="@+id/item_image_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="194dp"
+                        app:srcCompat="@drawable/ic_launcher_foreground"
+                        android:scaleType="fitCenter"
+                        />
+                    <ImageView
+                        android:id="@+id/item_image_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="194dp"
+                        app:srcCompat="@drawable/ic_launcher_foreground"
+                        android:scaleType="fitCenter"
+                        />
+            </ViewAnimator>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <TextView
+            android:id="@+id/item_details_name"
+            style="@style/GetItCheapTextView"
+            android:textStyle="bold"
+            android:textSize="28sp"
+            android:maxHeight="80dp"
+            android:maxWidth="2800dp"
+            android:layout_margin="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            tools:text="Scooter"
+            />
+
+            <TextView
+                android:id="@+id/item_details_item_type"
+                style="@style/GetItCheapTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="15dp"
+                android:textStyle="bold"
+                tools:text="For Rent" />
+            <TextView
+                android:id="@+id/item_details_price"
+                style="@style/GetItCheapTextView"
+                android:layout_below="@id/item_details_item_type"
+                android:layout_toStartOf="@id/item_details_rental_basis"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="1dp"
+                android:layout_alignWithParentIfMissing="true"
+                tools:text="$15"
+                />
+            <TextView
+                android:id="@+id/item_details_rental_basis"
+                style="@style/GetItCheapTextView"
+                android:layout_below="@id/item_details_item_type"
+                android:textStyle="bold"
+                android:gravity="end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="-10dp"
+                tools:text="Per Hour"
+                android:layout_alignParentEnd="true"
+                android:visibility="gone"
+                tools:visibility="visible"
+                />
+        </RelativeLayout>
+            <TextView
+                android:id="@+id/item_details_description"
+                style="@style/GetItCheapTextView"
+                android:minHeight="100dp"
+                android:layout_marginVertical="10dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                tools:text="This is a ETWow GT model 2020. I've been using it for almost 5 months and I'ts been amazing. Bought it for 800$ and selling it for just 400$. Half the price, greate deal. Don't miss it!"
+            />
+            <TextView
+                android:id="@+id/item_details_contact_label"
+                style="@style/GetItCheapTextView"
+                android:textStyle="bold"
+                android:layout_marginVertical="10dp"
+                android:layout_marginHorizontal="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Contact Information"
+                />
+
+            <TextView
+                android:id="@+id/item_details_contact"
+                style="@style/GetItCheapTextView"
+                android:textSize="14sp"
+                android:layout_marginHorizontal="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                tools:text="Email me at mail2me.mvk@gmail.com"
+                />
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:layout_margin="20dp"
+            android:background="@drawable/border_background"
+            android:padding="10dp"
+            >
+            <TextView
+                style="@style/GetItCheapTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:paddingHorizontal="10dp"
+                android:text="Posted By :"
+                />
+            <TextView
+                android:id="@+id/item_details_username"
+                style="@style/GetItCheapTextView.marquee"
+                android:maxWidth="200dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                tools:text="Vikram Muralidharan"
+                />
+            <TextView
+                style="@style/GetItCheapTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:paddingHorizontal="10dp"
+                android:text="Category"
+                />
+            <TextView
+                android:id="@+id/item_details_category"
+                style="@style/GetItCheapTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                tools:text="Electronics"
+                />
+            <TextView
+                style="@style/GetItCheapTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:paddingHorizontal="10dp"
+                android:text="Date Posted"
+                />
+            <TextView
+                android:id="@+id/item_details_date_posted"
+                style="@style/GetItCheapTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                tools:text="02/11/2021"
+                />
+        </GridLayout>
+    </LinearLayout>
+
+</ScrollView>
+
+
+</FrameLayout>
