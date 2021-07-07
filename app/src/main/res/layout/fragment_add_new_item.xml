@@ -208,6 +208,17 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/upload_image"
+            android:layout_width="200dp"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
+            android:fontFamily="@font/font_primary"
+            android:text="Upload Image"
+            app:backgroundTint="@android:color/holo_green_dark"
+            app:cornerRadius="10dp"
+            />
 
         <com.google.android.material.button.MaterialButton
         android:id="@+id/submit_your_item"

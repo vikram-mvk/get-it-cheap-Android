@@ -177,7 +177,7 @@ class AccountFragment : Fragment() {
     }
 
     fun updateLayout() {
-        val isLoggedIn = sharedPrefsInstance.getEmail().length > 0
+        val isLoggedIn = sharedPrefsInstance.getEmail().isNotEmpty()
         if (isLoggedIn) {
             profileLayout.visibility = View.VISIBLE
             signInSignOutLayout.visibility = View.GONE

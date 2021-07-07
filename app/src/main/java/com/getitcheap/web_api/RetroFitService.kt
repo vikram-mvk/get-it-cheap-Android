@@ -11,7 +11,7 @@ object RetroFitService {
     private val httpclient = OkHttpClient.Builder().build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:5000/")
+        .baseUrl("http://3.85.128.63:5000/")
         .addConverterFactory(GsonConverterFactory.create())
         .client(httpclient)
         .build()

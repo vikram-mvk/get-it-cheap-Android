@@ -148,8 +148,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
-
         <LinearLayout
             android:id="@+id/profile_layout"
             android:layout_width="match_parent"
