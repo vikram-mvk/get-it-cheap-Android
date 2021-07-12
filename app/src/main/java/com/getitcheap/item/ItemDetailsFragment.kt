@@ -6,8 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.getitcheap.R
 import com.getitcheap.utils.FragmentUtils
 import com.getitcheap.utils.ItemUtils
@@ -39,6 +41,9 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
     private lateinit var itemUsername : TextView
     private lateinit var itemCategory : TextView
     private lateinit var itemDatePosted : TextView
+    private lateinit var itemImage1 : ImageView
+    private val S3_BASE_URL = "https://get-it-cheap.s3.amazonaws.com/"
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +74,7 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
         itemUsername = view.findViewById(R.id.item_details_username)
         itemCategory = view.findViewById(R.id.item_details_category)
         itemDatePosted = view.findViewById(R.id.item_details_date_posted)
+        itemImage1 = view.findViewById(R.id.item_image_1)
 
         itemName.text = item.itemName
         itemType.text = ItemUtils.getItemTypeDisplayString(item.itemType)
@@ -78,6 +84,14 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
             itemRentalBasis.text = ItemUtils.getRentalBasisDisplayString(item.rentalBasis!!)
             itemRentalBasis.visibility = View.VISIBLE
         }
+
+        Glide.with(view.context)
+            .load(S3_BASE_URL+item.image)
+            .placeholder(R.drawable.ic_launcher_foreground)
+            .error(R.drawable.ic_launcher_foreground)
+            .into(itemImage1)
+
+
         itemDescription.text = item.description
         itemContact.text = item.contact
         itemUsername.text = item.username

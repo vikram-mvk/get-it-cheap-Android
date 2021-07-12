@@ -17,8 +17,10 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginVertical="25dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
     >
 
     <com.google.android.material.textfield.TextInputLayout
@@ -64,7 +66,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@drawable/border_background"
-        android:layout_marginVertical="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         >
         <com.google.android.material.textview.MaterialTextView
             style="@style/GetItCheapTextView"
@@ -75,7 +78,8 @@
             android:text="Category"
             android:textAlignment="center"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             />
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/category_spinner"
@@ -93,7 +97,8 @@
           android:layout_height="wrap_content"
           android:orientation="horizontal"
           android:background="@drawable/border_background"
-          android:layout_marginVertical="10dp"
+          android:layout_marginTop="10dp"
+          android:layout_marginBottom="10dp"
           >
 
         <com.google.android.material.textview.MaterialTextView
@@ -106,7 +111,8 @@
           android:text="Item type"
             android:textAlignment="center"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             />
         <RadioGroup
             android:id="@+id/item_type_radio_group"
@@ -126,7 +132,9 @@
                 android:layout_height="wrap_content"
                 android:text="For Rent"
                 android:checked="true"
-                android:layout_marginHorizontal="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+
                 />
             <com.google.android.material.radiobutton.MaterialRadioButton
                 style="@style/GetItCheapTextView"
@@ -135,7 +143,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="For Sale"
-                android:layout_marginHorizontal="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 />
         </RadioGroup>
   </LinearLayout>
@@ -145,7 +154,8 @@
        android:layout_height="wrap_content"
         android:orientation="horizontal"
        android:background="@drawable/border_background"
-       android:layout_marginVertical="10dp"
+       android:layout_marginTop="10dp"
+       android:layout_marginBottom="10dp"
        >
        <com.google.android.material.textview.MaterialTextView
            style="@style/GetItCheapTextView"
@@ -156,7 +166,8 @@
            android:text="Rental Basis"
            android:textAlignment="center"
            android:layout_gravity="center"
-           android:layout_marginHorizontal="10dp"
+           android:layout_marginLeft="10dp"
+           android:layout_marginRight="10dp"
            />
        <androidx.appcompat.widget.AppCompatSpinner
            style="@style/GetItCheapTextView"
@@ -213,7 +224,8 @@
             android:layout_width="200dp"
             android:layout_gravity="center"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:fontFamily="@font/font_primary"
             android:text="Upload Image"
             app:backgroundTint="@android:color/holo_green_dark"
@@ -224,7 +236,8 @@
         android:id="@+id/submit_your_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:fontFamily="@font/font_primary"
         android:text="Submit your Item"
         app:backgroundTint="@color/primaryButton"

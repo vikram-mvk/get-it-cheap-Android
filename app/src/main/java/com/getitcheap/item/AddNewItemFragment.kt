@@ -1,7 +1,14 @@
 package com.getitcheap.item
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.provider.MediaStore
+import android.provider.MediaStore.MediaColumns
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,18 +16,25 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.Spinner
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import com.getitcheap.R
 import com.getitcheap.data.SharedPrefs
 import com.getitcheap.utils.ItemUtils
 import com.getitcheap.utils.Utils
 import com.getitcheap.web_api.RetroFitService.itemsApi
-import com.getitcheap.web_api.request.NewItemRequest
 import com.getitcheap.web_api.response.MessageResponse
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -46,7 +60,8 @@ class AddNewItemFragment : Fragment() {
     lateinit var rentalBasisLayout : LinearLayout
     lateinit var contact : TextInputEditText
     lateinit var submitYourItem: MaterialButton
-
+    lateinit var uploadImage : MaterialButton
+    var imageFile : File? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +93,9 @@ class AddNewItemFragment : Fragment() {
         rentalBasisLayout = view.findViewById(R.id.rental_basis_layout)
         rentalBasis = view.findViewById(R.id.rental_basis_spinner)
         contact = view.findViewById(R.id.contact_input)
+        uploadImage = view.findViewById(R.id.upload_image)
         submitYourItem = view.findViewById(R.id.submit_your_item)
+
 
         // Set up adapters for spinner
         val categories = listOf("Electronics", "Outdoor", "Clothing")
@@ -94,47 +111,101 @@ class AddNewItemFragment : Fragment() {
             }
         }
 
-        submitYourItem.setOnClickListener {
-            // Payload
-            val itemName = itemName.text.toString()
-            val description = description.text.toString()
-            val category = category.selectedItem.toString()
-            val type = ItemUtils.getItemTypeDbString(itemType.checkedRadioButtonId)
-            val price = price.text.toString().toDouble()
-            var rentalBasisValue : String? = null
-            if (ItemUtils.isForRent(type)) {
-                rentalBasisValue = ItemUtils.getRentalBasisDbString(rentalBasis.selectedItem.toString())
+        uploadImage.setOnClickListener {
+
+            if(ActivityCompat.checkSelfPermission(view.context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            {
+                requestPermissions(
+                    arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    2000);
             }
-            val contact = contact.text.toString()
-            val token = sharedPrefsInstance.getJwtToken()
-            val username = sharedPrefsInstance.getUsername()
-            val userId = sharedPrefsInstance.getUserId()
+            else {
+                openGallery();
+            }
 
-            val newItemRequest = itemsApi.newItem(token, NewItemRequest(
-                itemName = itemName, description = description,
-                price = price, category = category, itemType = type, image = "",
-                rentalBasis = rentalBasisValue, contact = contact, userId = userId, username = username))
+        }
 
-            newItemRequest.enqueue(object: Callback<MessageResponse> {
+
+        submitYourItem.setOnClickListener {
+                uploadNewItem()
+        }
+
+    }
+
+
+    private fun openGallery() {
+        val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        cameraIntent.type = "image/*"
+        startActivityForResult(cameraIntent, 1000)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        data?.let {
+            val uri =  data.data
+            imageFile = File(uri?.let { fileUri -> getPath(fileUri) }!!)
+        }
+    }
+
+    private fun getPath(uri: Uri): String? {
+        val projection = arrayOf(MediaColumns.DATA)
+        val cursor: Cursor? = context?.contentResolver?.query(uri, projection, null, null, null)
+        val columnIndex = cursor?.getColumnIndexOrThrow(MediaColumns.DATA)
+        cursor?.moveToFirst()
+        val path = cursor?.getString(columnIndex!!)
+        cursor?.close()
+        return path
+    }
+
+    private fun uploadNewItem() {
+
+        val itemName = itemName.text.toString().toRequestBody(MultipartBody.FORM)
+        val description = description.text.toString().toRequestBody(MultipartBody.FORM)
+        val category = category.selectedItem.toString().toRequestBody(MultipartBody.FORM)
+        val type = ItemUtils.getItemTypeDbString(itemType.checkedRadioButtonId)
+            .toRequestBody(MultipartBody.FORM)
+        val price = price.text.toString().toRequestBody(MultipartBody.FORM)
+        var rentalBasisValue : RequestBody? = null
+
+        if (ItemUtils.isForRent(ItemUtils.getItemTypeDbString(itemType.checkedRadioButtonId))) {
+            rentalBasisValue = ItemUtils.getRentalBasisDbString(rentalBasis.selectedItem.toString())
+                .toRequestBody(MultipartBody.FORM)
+        }
+        var imageMultiPart : MultipartBody.Part? = null
+
+        if (imageFile != null) {
+            imageMultiPart = MultipartBody.Part.createFormData("image", imageFile!!.name,
+                imageFile!!.asRequestBody(MultipartBody.FORM))
+        }
+
+        val contact = contact.text.toString().toRequestBody(MultipartBody.FORM)
+        val username = sharedPrefsInstance.getUsername().toRequestBody(MultipartBody.FORM)
+        val userId = sharedPrefsInstance.getUserId().toString().toRequestBody(MultipartBody.FORM)
+        val token = sharedPrefsInstance.getJwtToken()
+
+        itemsApi.newItem(token = token, itemName = itemName, description = description, price = price,
+            category = category, itemType = type, rentalBasis = rentalBasisValue, userId = userId, username = username,
+            contact = contact, image = imageMultiPart)
+            .enqueue(object: Callback<MessageResponse> {
                 override fun onResponse(
                     call: Call<MessageResponse>,
                     response: Response<MessageResponse>
                 ) {
                     val newItemResponse = response.body()
                     println(newItemResponse?.message)
-                    Utils.showSnackBarForSuccess(view, "Your item has been posted!")
+                    Utils.showSnackBarForSuccess(view!!, "Your item has been posted!")
                 }
 
                 override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
-                    Utils.showSnackBarForFailure(view, "Error in posting Item.")
+                    Utils.showSnackBarForFailure(view!!, "Error in posting Item.")
+                    Log.d("err", t.message!!)
                 }
-
             })
 
-        }
-
-
     }
+
+
 
     companion object {
         /**

@@ -6,8 +6,10 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
         android:focusableInTouchMode="true"
         style="@style/GlobalStyle"
     >
@@ -108,7 +110,8 @@
                 android:id="@+id/button_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
                 android:fontFamily="@font/font_primary"
                 android:text="Sign In"
                 app:backgroundTint="@color/primaryButton"
@@ -168,7 +171,8 @@
                 style="@style/HorizontalLine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
                 />
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -185,7 +189,8 @@
 
                 <TextView
                     android:id="@+id/username"
-                    android:paddingHorizontal="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
                     android:layout_toRightOf="@id/username_label"
                     style="@style/GetItCheapTextView"
                     android:layout_width="wrap_content"
@@ -194,7 +199,8 @@
                     />
                 <com.google.android.material.button.MaterialButton
 
-                    android:layout_marginVertical="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
                     style="@style/GetItCheapButton"
                     android:textColor="@android:color/white"
                     android:id="@+id/your_items"
@@ -207,7 +213,8 @@
             </RelativeLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:layout_marginVertical="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
                 app:backgroundTint="@android:color/holo_red_dark"
                 style="@style/GetItCheapButton"
                 android:textColor="@android:color/white"

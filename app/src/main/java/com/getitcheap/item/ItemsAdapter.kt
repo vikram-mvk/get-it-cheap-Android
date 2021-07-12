@@ -18,7 +18,9 @@ import com.getitcheap.web_api.response.ItemsResponse
 
 class ItemsAdapter(private var items: List<ItemsResponse>) : RecyclerView.Adapter<ItemsAdapter.ItemsViewHolder>() {
 
+    val S3_BASE_URL = "https://get-it-cheap.s3.amazonaws.com/"
     inner class ItemsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         private val itemNameTextView : TextView =  itemView.findViewById(R.id.item_name_text)
         private val itemDescriptionTextView: TextView = itemView.findViewById(R.id.item_description_text)
         private val itemPriceTextView : TextView = itemView.findViewById(R.id.item_price_text)
@@ -31,13 +33,14 @@ class ItemsAdapter(private var items: List<ItemsResponse>) : RecyclerView.Adapte
             itemDescriptionTextView.text = item.description
             itemPriceTextView.text = String.format("$%s", item.price)
             itemTypeTextView.text = ItemUtils.getItemTypeDisplayString(item.itemType)
+
             if (ItemUtils.isForRent(item.itemType)) {
                 rentalBasisTextView.text = ItemUtils.getRentalBasisDisplayString(item.rentalBasis!!)
                 rentalBasisTextView.visibility = View.VISIBLE
             }
 
             Glide.with(itemView.context)
-                .load(item.image)
+                .load(S3_BASE_URL+item.image)
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .error(R.drawable.ic_launcher_foreground)
                 .into(itemImage)

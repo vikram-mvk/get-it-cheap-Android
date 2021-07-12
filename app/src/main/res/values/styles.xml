@@ -55,7 +55,8 @@
         <item name="android:topLeftRadius">20dp</item>
         <item name="android:drawableTop">@drawable/icon_navbar_items</item>
         <item name="itemRippleColor">@color/mtrl_bottom_nav_colored_ripple_color</item>
-        <item name="android:layout_marginHorizontal">10dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
         <item name="android:gravity">center</item>
 
     </style>
@@ -70,7 +71,8 @@
         <item name="boxCornerRadiusTopEnd">10dp</item>
         <item name="android:paddingStart">2dp</item>
         <item name="android:paddingEnd">2dp</item>
-        <item name="android:layout_marginVertical">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
         <item name="android:windowCloseOnTouchOutside">true</item>
     </style>
 
