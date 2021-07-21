@@ -12,6 +12,7 @@ data class ItemsResponse(
     @SerializedName("rentalBasis") val rentalBasis: String?,
     @SerializedName("userId") val userId: Long,
     @SerializedName("username") val username: String,
+    @SerializedName("itemLocation") val itemLocation: String,
     @SerializedName("contact") val contact: String,
     @SerializedName("datePosted") val datePosted: String
 

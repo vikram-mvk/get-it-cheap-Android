@@ -16,6 +16,7 @@ import com.getitcheap.web_api.RetroFitService.itemsApi
 import com.getitcheap.web_api.response.ItemsResponse
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import retrofit2.Call
 import retrofit2.Callback
@@ -60,6 +61,7 @@ class ItemsFragment : Fragment() {
         itemsResponseTextView = view.findViewById(R.id.items_response_text_view)
         checkboxForRent = view.findViewById(R.id.checkbox_for_rent)
         checkboxForSale = view.findViewById(R.id.checkbox_for_sale)
+        filterButton = view.findViewById(R.id.filter_button)
 
         // Initialize the recycler view
         itemsRecyclerView.apply {
@@ -71,6 +73,11 @@ class ItemsFragment : Fragment() {
         // Initially both are checked, add them in the set by default
         itemTypeFilters.add(ItemUtils.FOR_RENT)
         itemTypeFilters.add(ItemUtils.FOR_SALE)
+
+        filterButton.setOnClickListener {
+            val filterView = MaterialAlertDialogBuilder(view.context).create()
+            // filterView.setView()
+        }
 
         getItems(view) // gets All Items and populates the recycler view with items
 

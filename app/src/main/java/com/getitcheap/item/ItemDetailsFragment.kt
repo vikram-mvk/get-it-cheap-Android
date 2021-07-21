@@ -38,6 +38,7 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
     private lateinit var itemRentalBasis : TextView
     private lateinit var itemDescription : TextView
     private lateinit var itemContact : TextView
+    private lateinit var itemLocation : TextView
     private lateinit var itemUsername : TextView
     private lateinit var itemCategory : TextView
     private lateinit var itemDatePosted : TextView
@@ -70,6 +71,7 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
         itemPrice = view.findViewById(R.id.item_details_price)
         itemRentalBasis = view.findViewById(R.id.item_details_rental_basis)
         itemDescription = view.findViewById(R.id.item_details_description)
+        itemLocation = view.findViewById(R.id.item_details_item_location)
         itemContact = view.findViewById(R.id.item_details_contact)
         itemUsername = view.findViewById(R.id.item_details_username)
         itemCategory = view.findViewById(R.id.item_details_category)
@@ -93,6 +95,7 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
 
 
         itemDescription.text = item.description
+        itemLocation.text = item.itemLocation
         itemContact.text = item.contact
         itemUsername.text = item.username
         itemCategory.text = item.category

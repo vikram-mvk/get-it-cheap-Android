@@ -113,6 +113,31 @@
                 tools:text="This is a ETWow GT model 2020. I've been using it for almost 5 months and I'ts been amazing. Bought it for 800$ and selling it for just 400$. Half the price, greate deal. Don't miss it!"
             />
             <TextView
+                android:id="@+id/item_details_item_location_label"
+                style="@style/GetItCheapTextView"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Item Location"
+                />
+
+            <TextView
+                android:id="@+id/item_details_item_location"
+                style="@style/GetItCheapTextView"
+                android:textSize="14sp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                tools:text="2430 Shady Glen CT"
+                />
+            <TextView
                 android:id="@+id/item_details_contact_label"
                 style="@style/GetItCheapTextView"
                 android:textStyle="bold"
