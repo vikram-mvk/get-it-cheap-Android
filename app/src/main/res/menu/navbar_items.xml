@@ -6,13 +6,10 @@
         android:icon="@drawable/icon_navbar_items"
         />
     <item
-        android:id="@+id/navbar_favourites"
-        android:title="FAVOURITES"
-        android:icon="@drawable/icon_navbar_favourites"/>
-    <item
         android:id="@+id/navbar_new_item"
         android:title="LIST YOUR ITEM"
         android:icon="@drawable/icon_navbar_new_item"
+        android:visible="false"
         />
     <item
         android:id="@+id/navbar_account"

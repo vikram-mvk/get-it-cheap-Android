@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.GetItCheap">
-        <activity android:name=".BaseActivity">
+        <activity android:name=".BaseActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

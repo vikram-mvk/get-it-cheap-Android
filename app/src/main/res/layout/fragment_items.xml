@@ -93,7 +93,7 @@
     </HorizontalScrollView>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/no_items_available_text_view"
+        android:id="@+id/items_response_text_view"
         style="@style/GetItCheapTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:textAlignment="center"
-        android:text="@string/no_items_available"
+        android:text="@string/dashes"
         android:visibility="gone"
         />
 

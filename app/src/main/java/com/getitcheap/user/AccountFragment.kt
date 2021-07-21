@@ -1,23 +1,28 @@
 package com.getitcheap.user
 
+import android.app.Activity
+import android.content.DialogInterface
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import com.getitcheap.R
 import com.getitcheap.data.SharedPrefs
+import com.getitcheap.item.ShowAddButton
+import com.getitcheap.utils.AccountUtils
 import com.getitcheap.utils.Utils
-import com.getitcheap.web_api.RetroFitService
 import com.getitcheap.web_api.RetroFitService.userApi
-import com.getitcheap.web_api.api_definition.UsersApi
 import com.getitcheap.web_api.request.SigninRequest
 import com.getitcheap.web_api.request.SignupRequest
 import com.getitcheap.web_api.response.MessageResponse
 import com.getitcheap.web_api.response.SigninResponse
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
@@ -25,25 +30,19 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [AccountFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AccountFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private var fragmentView: View? = null
 
     lateinit var sharedPrefsInstance : SharedPrefs
     lateinit var firstNameInputLayout : TextInputLayout
+    lateinit var firstNameInput : TextInputEditText
     lateinit var lastNameInputLayout : TextInputLayout
+    lateinit var lastNameInput : TextInputEditText
+    lateinit var emailInputLayout : TextInputLayout
     lateinit var emailInput : TextInputEditText
+    lateinit var passwordInputLayout : TextInputLayout
     lateinit var passwordInput : TextInputEditText
     lateinit var buttonTop : MaterialButton
     lateinit var buttonBottom : MaterialButton
@@ -53,12 +52,19 @@ class AccountFragment : Fragment() {
     lateinit var profileLayout : LinearLayout
     lateinit var signInSignOutLayout: ConstraintLayout
     lateinit var signOutButton: MaterialButton
+    lateinit var showAddButtonImpl : ShowAddButton
+    lateinit var inputValidityMap : MutableMap<Int, Boolean>
+
+    fun TextInputLayout.setBoxColor(color: Int) {
+        val defaultStrokeColor = TextInputLayout::class.java.getDeclaredField("defaultStrokeColor")
+        defaultStrokeColor.isAccessible = true
+        defaultStrokeColor.set(this, color)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+           // args
         }
 
     }
@@ -67,35 +73,95 @@ class AccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_account, container, false)
+        if (fragmentView == null) {
+            fragmentView = inflater.inflate(R.layout.fragment_account, container, false)
+        }
+
+        return fragmentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        signInSignOutLayout = view.findViewById(R.id.signin_singout_layout)
+        signInSignOutLayout = view.findViewById(R.id.signin_signout_layout)
         profileLayout = view.findViewById(R.id.profile_layout)
         sharedPrefsInstance = SharedPrefs.getInstance(view.context)
-
-        emailInput = view.findViewById(R.id.category_input)
-        passwordInput = view.findViewById(R.id.price_input)
+        emailInputLayout = view.findViewById(R.id.email_input_layout)
+        emailInput = view.findViewById(R.id.email_input)
+        passwordInputLayout = view.findViewById(R.id.password_input_layout)
+        passwordInput = view.findViewById(R.id.password_input)
         buttonTop = view.findViewById(R.id.button_top)
         buttonBottom = view.findViewById(R.id.button_bottom)
         labelForButtonBottom = view.findViewById(R.id.label_for_button_bottom)
-        firstNameInputLayout = view.findViewById(R.id.item_name_input_layout)
-        lastNameInputLayout = view.findViewById(R.id.description_input_layout)
+        firstNameInputLayout = view.findViewById(R.id.first_name_input_layout)
+        firstNameInput = view.findViewById(R.id.first_name_input)
+        lastNameInput = view.findViewById(R.id.last_name_input)
+        lastNameInputLayout = view.findViewById(R.id.last_name_input_layout)
         signOutButton = view.findViewById(R.id.profile_signout)
+
+
+        var allInputFields = arrayOf(firstNameInput, lastNameInput, emailInput, passwordInput)
+
+        inputValidityMap = mutableMapOf(
+            firstNameInput.id to AccountUtils.getRegexForField(firstNameInput.id).matches(firstNameInput.text.toString()),
+            lastNameInput.id to AccountUtils.getRegexForField(lastNameInput.id).matches(lastNameInput.text.toString()),
+            emailInput.id to AccountUtils.getRegexForField(emailInput.id).matches(emailInput.text.toString()),
+            passwordInput.id to AccountUtils.getRegexForField(passwordInput.id).matches(passwordInput.text.toString())
+        )
+
+        allInputFields.forEach {
+            it.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus) {
+                    val input = it.text.toString()
+                    val inputLayout = it.parent.parent as TextInputLayout
+                    var isInputValid = AccountUtils.getRegexForField(it.id).matches(input)
+                    var showErrorOnBox = input.isNotEmpty() && !isInputValid
+                    var errorMessage = "Invalid "+ inputLayout.hint.toString()
+                    // If its a password in sign in view, just check if its not empty
+                    if (it.id == R.id.password_input && firstNameInputLayout.visibility == View.GONE) {
+                        isInputValid = input.isNotEmpty()
+                        showErrorOnBox = input.isEmpty()
+                        errorMessage = "Please enter your Password"
+                    }
+                    inputValidityMap[it.id] = isInputValid
+
+                    checkInputValidity(showErrorOnBox, it.parent.parent as TextInputLayout, errorMessage)
+                }
+            }
+        }
 
         // set up Listeners
         onSignIn = View.OnClickListener {
+            // Close the keyboard
+            val imm: InputMethodManager = (view.context as AppCompatActivity)
+                .getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view?.windowToken, 0)
+
+            if (!checkInputValidity(null, null, null)) {
+                Utils.showSnackBarForFailure(view, "Please enter valid Input in all fields")
+                return@OnClickListener
+            }
+
             val email = emailInput.text.toString()
             val password = passwordInput.text.toString()
-            userApi.Signin(SigninRequest(email = email, password = password))
-                .enqueue(object: Callback<SigninResponse> {
+
+            val signInRequest = userApi.Signin(SigninRequest(email = email, password = password))
+
+            val signingInView = MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Please Wait")
+                .setMessage("Signing In..")
+                .setNegativeButton("Cancel", object : DialogInterface.OnClickListener{
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        signInRequest.cancel()
+                    }
+                }).show()
+
+            signInRequest.enqueue(object: Callback<SigninResponse> {
                     override fun onFailure(call: Call<SigninResponse>, t: Throwable) {
+                        signingInView.dismiss()
                         Utils.showSnackBarForFailure(view, "Sign in failed")
                     }
                     override fun onResponse(call: Call<SigninResponse>, response: Response<SigninResponse>) {
+                        signingInView.dismiss()
                         if (response.code() == 200) {
                             Utils.showSnackBarForSuccess(view, "Sign in successful")
                         } else {
@@ -118,20 +184,45 @@ class AccountFragment : Fragment() {
         }
 
         onSignUp = View.OnClickListener {
+            // Close the keyboard
+            val imm: InputMethodManager = (view.context as AppCompatActivity)
+                .getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view?.windowToken, 0)
+
+            if (!checkInputValidity(null, null, null)) {
+                Utils.showSnackBarForFailure(view, "Please enter valid Input in all fields")
+                return@OnClickListener
+            }
+
+
             val firstName = firstNameInputLayout.editText?.text.toString()
             val lastName = lastNameInputLayout.editText?.text.toString()
             val email = emailInput.text.toString()
             val password = passwordInput.text.toString()
-            userApi.Signup(SignupRequest(firstName=firstName,
+
+            val signUpRequest = userApi.Signup(SignupRequest(firstName=firstName,
                 lastName = lastName, email = email, password = password))
+
+            val signingupView = MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Please Wait")
+                .setMessage("Signing up..")
+                .setNegativeButton( "Cancel", object : DialogInterface.OnClickListener{
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        signUpRequest.cancel()
+                    }
+                }).show()
+
+            signUpRequest
                 .enqueue(object: Callback<MessageResponse>{
                     override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
+                        signingupView.dismiss()
                         Utils.showSnackBarForFailure(view, "Sign up Failed")
                     }
                     override fun onResponse(
                         call: Call<MessageResponse>,
                         response: Response<MessageResponse>
                     ) {
+                        signingupView.dismiss()
                         if (response.code() == 200) {
                             Utils.showSnackBarForSuccess(view, "Sign up successful")
                             setupViewForSignIn()
@@ -140,6 +231,7 @@ class AccountFragment : Fragment() {
                         }
                     }
                 })
+
         }
 
         signOutButton.setOnClickListener {
@@ -151,6 +243,43 @@ class AccountFragment : Fragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        checkInputValidity(null, null, null)
+    }
+
+    /**
+     * Pass in null if you want to check the input validity of all the fields
+     * Otherwise pass in the particular field and its validity to color the box Red if error
+     */
+    private fun checkInputValidity(showErrorOnLayout : Boolean?, inputLayout: TextInputLayout?, errorMessage : String?) : Boolean {
+
+        if (showErrorOnLayout != null && inputLayout != null) {
+            var errorMessageToast = "Invalid "+ inputLayout.hint
+            if (showErrorOnLayout) {
+                inputLayout.setBoxColor(resources.getColor(R.color.errorRedBright, null))
+                Utils.showToastForFailure(requireView(), errorMessage)
+            } else {
+                inputLayout.setBoxColor(resources.getColor(R.color.border_background_color, null))
+            }
+            return showErrorOnLayout
+        }
+
+        clearAllInputFocus() // to trigger the invalid input fields
+
+        var isValid = false
+
+        // For sign In, just check email and if the password is not empty
+         isValid = inputValidityMap[emailInput.id]!! && passwordInput.text!!.isNotEmpty()
+
+        // if firstName is visible, its a signup view and we also need to check password validity, firstName and lastName
+        if (firstNameInputLayout.visibility == View.VISIBLE) {
+            isValid = isValid && inputValidityMap[passwordInput.id]!! && inputValidityMap[firstNameInput.id]!!
+                    && inputValidityMap[lastNameInput.id]!!
+        }
+
+        return isValid
+    }
 
     private fun setupViewForSignIn() {
         firstNameInputLayout.visibility = View.GONE
@@ -181,30 +310,33 @@ class AccountFragment : Fragment() {
         if (isLoggedIn) {
             profileLayout.visibility = View.VISIBLE
             signInSignOutLayout.visibility = View.GONE
+            showAddButtonImpl.showAddButtonInMenu(sharedPrefsInstance.getEmail().isNotEmpty())
         } else {
             profileLayout.visibility = View.GONE
             signInSignOutLayout.visibility = View.VISIBLE
             setupViewForSignIn() // By default show SignIn view
+            showAddButtonImpl.showAddButtonInMenu(sharedPrefsInstance.getEmail().isNotEmpty())
         }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AccountFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AccountFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    fun showOrHideAddItem(showOrHide : ShowAddButton) {
+        showAddButtonImpl = showOrHide
     }
+
+    fun clearAllInputFocus() {
+        firstNameInput.clearFocus()
+        lastNameInput.clearFocus()
+        emailInput.clearFocus()
+        passwordInput.clearFocus()
+    }
+
+    companion object {
+
+        @Volatile private var accountFragment : AccountFragment? = null
+
+        fun getInstance(): AccountFragment =  accountFragment ?: synchronized(this) {
+            accountFragment ?: AccountFragment().also { it -> accountFragment = it }
+        }
+    }
+
 }

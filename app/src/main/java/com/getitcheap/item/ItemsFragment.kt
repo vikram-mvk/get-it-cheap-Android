@@ -1,22 +1,18 @@
 package com.getitcheap.item
 
-import android.content.Context
+import android.content.ClipData
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.getitcheap.R
-import com.getitcheap.data.SharedPrefs
 import com.getitcheap.utils.Utils
 import com.getitcheap.utils.ItemUtils
-import com.getitcheap.web_api.RetroFitService
 import com.getitcheap.web_api.RetroFitService.itemsApi
-import com.getitcheap.web_api.api_definition.ItemsApi
 import com.getitcheap.web_api.response.ItemsResponse
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -27,13 +23,13 @@ import retrofit2.Response
 
 class ItemsFragment : Fragment() {
 
-    private var param1: String? = null
+    private var fragmentView : View? = null
     private var itemTypeFilters = HashSet<String>();
     private var categoryFilters = HashSet<String>();
     lateinit var itemsLoadingLayout: LinearLayout
     lateinit var itemsRecyclerView: RecyclerView
     lateinit var searchView: androidx.appcompat.widget.SearchView
-    lateinit var noItemsAvailable: MaterialTextView
+    lateinit var itemsResponseTextView: MaterialTextView
     lateinit var checkboxForRent: MaterialCheckBox
     lateinit var checkboxForSale: MaterialCheckBox
     lateinit var sortButton: MaterialButton
@@ -61,7 +57,7 @@ class ItemsFragment : Fragment() {
         searchView = view.findViewById(R.id.search_input)
         itemsRecyclerView = view.findViewById(R.id.items_recycler_view)
         itemsLoadingLayout = view.findViewById(R.id.items_loading_layout)
-        noItemsAvailable = view.findViewById(R.id.no_items_available_text_view)
+        itemsResponseTextView = view.findViewById(R.id.items_response_text_view)
         checkboxForRent = view.findViewById(R.id.checkbox_for_rent)
         checkboxForSale = view.findViewById(R.id.checkbox_for_sale)
 
@@ -92,7 +88,7 @@ class ItemsFragment : Fragment() {
             getItems(view)
         }
 
-        searchView.setOnQueryTextListener( object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 val searchKey = searchView.query
                 if (searchKey.isNotEmpty()) {
@@ -139,7 +135,10 @@ class ItemsFragment : Fragment() {
 
                 override fun onFailure(call: Call<List<ItemsResponse>>, t: Throwable) {
                     itemsLoadingLayout.visibility = View.GONE
-                    Utils.showSnackBarForFailure(view, "Error getting Items from Server")
+                    val errorMessage = view.context?.getString(R.string.error_getting_items)
+                    itemsResponseTextView.text = errorMessage
+                    itemsResponseTextView.visibility = View.VISIBLE
+                    Utils.showSnackBarForFailure(view, errorMessage)
                 }
 
                 override fun onResponse(
@@ -154,14 +153,13 @@ class ItemsFragment : Fragment() {
 
                     if (items == null || items.isEmpty()) {
                         itemsRecyclerView.visibility = View.GONE
-                        noItemsAvailable.visibility = View.VISIBLE
+                        itemsResponseTextView.text = getString(R.string.no_items_available)
+                        itemsResponseTextView.visibility = View.VISIBLE
                     } else {
                         itemsRecyclerView.adapter?.let { adapter ->
-                            (adapter as ItemsAdapter).setData(
-                                items
-                            )
+                            (adapter as ItemsAdapter).setData(items)
                         }
-                        noItemsAvailable.visibility = View.GONE
+                        itemsResponseTextView.visibility = View.GONE
                         itemsRecyclerView.visibility = View.VISIBLE
                     }
                 }
@@ -196,12 +194,12 @@ class ItemsFragment : Fragment() {
 
                     if (items == null || items.isEmpty()) {
                         itemsRecyclerView.visibility = View.GONE
-                        noItemsAvailable.visibility = View.VISIBLE
+                        itemsResponseTextView.visibility = View.VISIBLE
                     } else {
                         itemsRecyclerView.adapter?.let { adapter ->
                             (adapter as ItemsAdapter).setData(items)
                         }
-                        noItemsAvailable.visibility = View.GONE
+                        itemsResponseTextView.visibility = View.GONE
                         itemsRecyclerView.visibility = View.VISIBLE
                     }
                 }
@@ -209,10 +207,11 @@ class ItemsFragment : Fragment() {
     }
 
     companion object {
-        @JvmStatic
-        @Synchronized
-        fun newInstance() : ItemsFragment {
-            return ItemsFragment()
+
+        @Volatile private var itemsFragment :ItemsFragment? = null
+
+        fun getInstance(): ItemsFragment =  itemsFragment ?: synchronized(this) {
+            itemsFragment ?: ItemsFragment().also { it -> itemsFragment = it }
         }
     }
 

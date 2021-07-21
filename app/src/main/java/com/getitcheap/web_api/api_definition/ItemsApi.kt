@@ -28,6 +28,7 @@ interface ItemsApi {
                 @Part("rentalBasis") rentalBasis: RequestBody?,
                 @Part("userId") userId: RequestBody,
                 @Part("username") username: RequestBody,
+                @Part("itemLocation") itemLocation: RequestBody,
                 @Part("contact") contact: RequestBody
     ) : Call<MessageResponse>
 

@@ -24,6 +24,12 @@ import com.getitcheap.utils.ItemUtils
 import com.getitcheap.utils.Utils
 import com.getitcheap.web_api.RetroFitService.itemsApi
 import com.getitcheap.web_api.response.MessageResponse
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import okhttp3.MultipartBody
@@ -36,20 +42,8 @@ import retrofit2.Response
 import java.io.File
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AddNewItemFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AddNewItemFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
     lateinit var sharedPrefsInstance : SharedPrefs
     lateinit var itemName : TextInputEditText
     lateinit var description : TextInputEditText
@@ -61,14 +55,14 @@ class AddNewItemFragment : Fragment() {
     lateinit var contact : TextInputEditText
     lateinit var submitYourItem: MaterialButton
     lateinit var uploadImage : MaterialButton
+    var address : String = ""
     var imageFile : File? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+          // args
         }
     }
 
@@ -76,15 +70,9 @@ class AddNewItemFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_new_item, container, false)
-    }
+        val view = inflater.inflate(R.layout.fragment_add_new_item, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         sharedPrefsInstance = SharedPrefs.getInstance(view.context)
-
-        // Link the views
         itemName = view.findViewById(R.id.item_name_input)
         description = view.findViewById(R.id.description_input)
         category = view.findViewById(R.id.category_spinner)
@@ -95,7 +83,6 @@ class AddNewItemFragment : Fragment() {
         contact = view.findViewById(R.id.contact_input)
         uploadImage = view.findViewById(R.id.upload_image)
         submitYourItem = view.findViewById(R.id.submit_your_item)
-
 
         // Set up adapters for spinner
         val categories = listOf("Electronics", "Outdoor", "Clothing")
@@ -116,23 +103,48 @@ class AddNewItemFragment : Fragment() {
             if(ActivityCompat.checkSelfPermission(view.context,
                     Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             {
-                requestPermissions(
-                    arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    2000);
+                requestPermissions(arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE), 2000);
             }
             else {
                 openGallery();
             }
 
         }
-
-
-        submitYourItem.setOnClickListener {
-                uploadNewItem()
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
         }
 
-    }
+        val placesClient = Places.createClient(requireContext())
 
+        val autocompleteFragment = childFragmentManager.findFragmentById(R.id.address_places_api) as AutocompleteSupportFragment
+        autocompleteFragment.setHint("Enter Item location")
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ADDRESS))
+        autocompleteFragment.setTypeFilter(TypeFilter.ADDRESS)
+        autocompleteFragment.setCountry("US")
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                address = place.address!!
+                autocompleteFragment.setHint(address)
+            }
+
+            override fun onError(status: Status) {
+
+            }
+        })
+
+        submitYourItem.setOnClickListener {
+            if (!checkInputValidity()) {
+                Utils.showSnackBarForFailure(requireView(), "Please fill out all the fields")
+                return@setOnClickListener
+            }
+            uploadNewItem()
+        }
+        return view
+    }
 
     private fun openGallery() {
         val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -183,10 +195,11 @@ class AddNewItemFragment : Fragment() {
         val username = sharedPrefsInstance.getUsername().toRequestBody(MultipartBody.FORM)
         val userId = sharedPrefsInstance.getUserId().toString().toRequestBody(MultipartBody.FORM)
         val token = sharedPrefsInstance.getJwtToken()
+        val itemLocation = address.toRequestBody(MultipartBody.FORM)
 
         itemsApi.newItem(token = token, itemName = itemName, description = description, price = price,
             category = category, itemType = type, rentalBasis = rentalBasisValue, userId = userId, username = username,
-            contact = contact, image = imageMultiPart)
+            contact = contact, itemLocation = itemLocation, image = imageMultiPart)
             .enqueue(object: Callback<MessageResponse> {
                 override fun onResponse(
                     call: Call<MessageResponse>,
@@ -206,24 +219,17 @@ class AddNewItemFragment : Fragment() {
     }
 
 
+    fun checkInputValidity() : Boolean{
+        return itemName.text.toString().isNotEmpty() && description.text!!.isNotEmpty() && contact.text!!.isNotEmpty() &&
+        price.text!!.isNotEmpty() && address.isNotEmpty()
+    }
+
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ListYourItem.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddNewItemFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        @Volatile private var addNewItemFragment :AddNewItemFragment? = null
+
+        fun getInstance(): AddNewItemFragment =  addNewItemFragment ?: synchronized(this) {
+            addNewItemFragment ?: AddNewItemFragment().also { it -> addNewItemFragment = it }
+        }
     }
 }

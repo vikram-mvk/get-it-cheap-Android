@@ -181,6 +181,19 @@
            android:textAlignment="textEnd"
            />
 </LinearLayout>
+        <LinearLayout
+            style="@style/GetItCheapTextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_background"
+            >
+            <fragment android:id="@+id/address_places_api"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            />
+        </LinearLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/price_input_layout"
