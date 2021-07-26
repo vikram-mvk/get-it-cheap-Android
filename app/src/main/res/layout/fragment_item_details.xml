@@ -78,8 +78,8 @@
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
-                android:layout_marginLeft="1dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="1dp"
                 android:layout_alignWithParentIfMissing="true"
                 tools:text="$15"
                 />
@@ -91,8 +91,8 @@
                 android:gravity="end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="-10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="-10dp"
                 tools:text="Per Hour"
                 android:layout_alignParentEnd="true"
                 android:visibility="gone"
@@ -123,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Item Location"
+                android:text="@string/item_location"
                 />
 
             <TextView
@@ -148,7 +148,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:text="Contact Information"
+                android:text="@string/contact_information"
                 />
 
             <TextView
@@ -181,7 +181,7 @@
                 />
             <TextView
                 android:id="@+id/item_details_username"
-                style="@style/GetItCheapTextView.marquee"
+                style="@style/GetItCheapTextView.Bold"
                 android:maxWidth="200dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -195,11 +195,11 @@
                 android:layout_column="0"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:text="Category"
+                android:text="@string/category"
                 />
             <TextView
                 android:id="@+id/item_details_category"
-                style="@style/GetItCheapTextView"
+                style="@style/GetItCheapTextView.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
@@ -216,7 +216,7 @@
                 />
             <TextView
                 android:id="@+id/item_details_date_posted"
-                style="@style/GetItCheapTextView"
+                style="@style/GetItCheapTextView.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"

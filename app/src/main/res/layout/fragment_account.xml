@@ -113,7 +113,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:fontFamily="@font/font_primary"
-                android:text="Sign In"
+                android:text="@string/sign_in"
                 app:backgroundTint="@color/primaryButton"
                 app:cornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -126,9 +126,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:text="Don't have an account ? "
+                android:text="@string/dont_have_an_account"
                 android:textAlignment="center"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@id/button_bottom"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -140,7 +140,7 @@
                 android:layout_width="150dp"
                 android:layout_height="45dp"
                 android:fontFamily="@font/font_primary"
-                android:text="Sign up"
+                android:text="@string/sign_up"
                 app:backgroundTint="@color/primaryButton"
                 app:cornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -164,7 +164,7 @@
                 android:textSize="28sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Account"
+                android:text="@string/account"
                 />
             <ImageView
                 style="@style/HorizontalLine"
@@ -206,7 +206,7 @@
                     android:layout_below="@id/username_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Your Items"
+                    android:text="@string/your_items"
                     />
 
             </RelativeLayout>
@@ -221,7 +221,7 @@
                 android:id="@+id/profile_signout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign Out"
+                android:text="@string/sign_out"
                 />
 
         </LinearLayout>

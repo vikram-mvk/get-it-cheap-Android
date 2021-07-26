@@ -1,6 +1,14 @@
 package com.getitcheap.utils
 
+import android.content.Context
+import android.graphics.Color
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.widget.ArrayAdapter
 import com.getitcheap.R
+import java.util.*
 
 object ItemUtils {
 
@@ -64,11 +72,36 @@ object ItemUtils {
     @JvmStatic
     fun isForRent(type:String) = type == FOR_RENT
 
+    @JvmStatic
+    fun getCategorySpinnerAdapter(context: Context, isAddNewItem: Boolean): ArrayAdapter<Categories> {
+        val categories = ArrayList<Categories>()
+        Categories.values().forEach { category -> categories.add(category) }
+        if(isAddNewItem) {
+            categories.removeAt(0)
+        }
+        return ArrayAdapter(context, R.layout.getitcheap_spinner, categories)
+    }
+
+    @JvmStatic
+    fun getRentalBasisSpinnerAdapter(context: Context): ArrayAdapter<String> {
+        return  ArrayAdapter(context, R.layout.getitcheap_spinner,
+            rentalBasisDisplayStringToDbString.keys.toTypedArray())
+    }
+
+    @JvmStatic
+    fun getLocationText(text : String) : SpannableString {
+        val spannableString = SpannableString(text)
+        spannableString.setSpan(RelativeSizeSpan(0.8f),0, Math.min(text.length, 20), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(ForegroundColorSpan(Color.BLACK), 0, Math.min(text.length, 20), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return spannableString
+    }
+
     enum class Categories {
-        electronics,
-        outdoor,
-        clothing,
-        others
+        All,
+        Electronics,
+        Outdoor,
+        Clothing,
+        Others
     }
 
     enum class ItemTypes {

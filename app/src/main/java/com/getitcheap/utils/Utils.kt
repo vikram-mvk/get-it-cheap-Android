@@ -64,6 +64,13 @@ class Utils {
             }
         }
 
+
+        fun closeTheKeyBoard(view : View) {
+            val imm: InputMethodManager = (view.context as AppCompatActivity)
+                .getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+
     }
 
 }

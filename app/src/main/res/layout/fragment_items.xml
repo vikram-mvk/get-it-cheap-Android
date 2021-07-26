@@ -40,10 +40,11 @@
             android:background="@color/primaryBackground"
             >
         <com.google.android.material.checkbox.MaterialCheckBox
+            style="@style/GetItCheapCheckBox"
             android:id="@+id/checkbox_for_sale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="For Sale"
+            android:text="@string/for_sale"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:fontFamily="@font/font_primary"
@@ -55,8 +56,8 @@
             android:id="@+id/checkbox_for_rent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="For Rent"
-
+            android:text="@string/for_rent"
+            style="@style/GetItCheapCheckBox"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:fontFamily="@font/font_primary"
@@ -65,30 +66,31 @@
             app:buttonTint="@color/primaryButton"
             />
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/filter_button"
-                android:layout_width="wrap_content"
-                android:layout_height="42dp"
-                android:text="Filter"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                app:backgroundTint="@color/primaryButton"
-                android:fontFamily="@font/font_primary"
-                app:cornerRadius="25dp"
-                />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/sort_button"
-                android:layout_width="wrap_content"
+                android:layout_width="10dp"
                 android:layout_height="42dp"
                 android:text="Sort"
-
+                android:visibility="invisible"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 app:backgroundTint="@color/primaryButton"
                 android:fontFamily="@font/font_primary"
                 app:cornerRadius="25dp"
-
                 />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filter_button"
+                android:layout_width="match_parent"
+                android:minWidth="110dp"
+                android:layout_height="40dp"
+                android:text="@string/filter"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                app:backgroundTint="@color/primaryButton"
+                android:fontFamily="@font/font_primary"
+                app:cornerRadius="25dp"
+                />
+
+
 
         </LinearLayout>
     </HorizontalScrollView>

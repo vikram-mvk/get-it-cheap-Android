@@ -3,6 +3,7 @@ package com.getitcheap.web_api.response
 import com.google.gson.annotations.SerializedName
 
 data class ItemsResponse(
+    @SerializedName("message") val message:String,
     @SerializedName("itemName") val itemName: String,
     @SerializedName("description") val description: String,
     @SerializedName("category") val category: String,

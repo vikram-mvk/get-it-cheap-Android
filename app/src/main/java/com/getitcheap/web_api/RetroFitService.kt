@@ -8,8 +8,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetroFitService {
-
-    val SERVER_IP = "10.0.2.2"
+    // 34.232.4.197
+    // 10.0.2.2
+    val SERVER_IP = "34.232.4.197"
     val PORT = "5000"
 
     // Android emulator to localhost = 10.0.2.2
@@ -27,13 +28,6 @@ object RetroFitService {
     val itemsApi: ItemsApi = retrofit.create(ItemsApi::class.java)
 
     val userApi: UsersApi = retrofit.create(UsersApi::class.java)
-
-    val health: UsersApi = Retrofit.Builder()
-        .baseUrl("http://$SERVER_IP:5000/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(httpClientHealth)
-        .build()
-        .create(UsersApi::class.java)
 
     fun<T> useApi(ApiDefinition: Class<T>): T {
         return retrofit.create(ApiDefinition)

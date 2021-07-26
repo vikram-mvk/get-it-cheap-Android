@@ -4,11 +4,12 @@ import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.getitcheap.data.SharedPrefs
 import com.getitcheap.user.AccountFragment
 import com.getitcheap.item.AddNewItemFragment
 import com.getitcheap.item.ItemsFragment
 import com.getitcheap.item.ShowAddButton
-import com.getitcheap.web_api.RetroFitService.health
+import com.getitcheap.web_api.RetroFitService.userApi
 import com.getitcheap.web_api.response.MessageResponse
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -18,6 +19,7 @@ import retrofit2.Response
 
 class BaseActivity : AppCompatActivity() {
     lateinit var navBar : BottomNavigationView
+    lateinit var sharedPrefsInstance : SharedPrefs
 
     private val showAddButtonImpl = object: ShowAddButton {
         override fun showAddButtonInMenu(shown: Boolean) {
@@ -35,7 +37,7 @@ class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
 
-        health.isServerRunning().enqueue(object: Callback<MessageResponse> {
+        userApi.isServerRunning().enqueue(object: Callback<MessageResponse> {
             override fun onResponse(call: Call<MessageResponse>, response: Response<MessageResponse>) { }
 
             override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
@@ -50,10 +52,9 @@ class BaseActivity : AppCompatActivity() {
                     })
                     .show()
                     .setOnDismissListener {
-                        this@BaseActivity.finishAffinity()
+                        //this@BaseActivity.finishAffinity()
                     }
             }
-
         })
 
         navBar = findViewById(R.id.nav_bar)
@@ -63,6 +64,11 @@ class BaseActivity : AppCompatActivity() {
         }
         (sButtonFragmentMap[R.id.navbar_account] as AccountFragment).showOrHideAddItem(showAddButtonImpl)
         navBar.selectedItemId = R.id.navbar_items
+
+        sharedPrefsInstance = SharedPrefs.getInstance(this@BaseActivity)
+
+        setAddButtonShown(sharedPrefsInstance.getEmail().isNotEmpty())
+
     }
 
     override fun onBackPressed() {

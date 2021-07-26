@@ -23,7 +23,6 @@
                 android:layout_height="194dp"
                 app:srcCompat="@drawable/ic_launcher_foreground"
                 android:scaleType="fitCenter"
-                android:contentDescription="Description"
                 />
 
             <RelativeLayout
@@ -77,7 +76,7 @@
                     <TextView
                         android:id="@+id/item_price_text"
                         android:layout_below="@id/item_type_text"
-                        android:layout_toLeftOf="@id/item_rental_basis_text"
+                        android:layout_toStartOf="@id/item_rental_basis_text"
                         android:layout_alignWithParentIfMissing="true"
                         style="@style/GetItCheapTextView.Bold"
                         android:textSize="14sp"
@@ -94,7 +93,7 @@
                         android:layout_alignParentEnd="true"
                         style="@style/GetItCheapTextView.Bold"
                         android:textSize="14sp"
-                        android:paddingLeft="5dp"
+                        android:paddingStart="5dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="Per hour"

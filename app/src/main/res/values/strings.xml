@@ -4,13 +4,48 @@
 
     <string name="dashes">---</string>
     <!-- Account String-->
+    <string name="account">Account</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="sign_in_failed">Sign in failed</string>
+    <string name="sign_in_successful">Sign in successful</string>
+    <string name="sign_up_successful">Sign up successful</string>
+    <string name="sign_up_failed">Sign up failed</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_out">Sign out</string>
+    <string name="dont_have_an_account">Don\'\t have an account ? </string>
+
 
     <!-- Item Strings-->
+    <string name="your_items">Your items</string>
+    <string name="item_name">Item name</string>
+    <string name="description">Description</string>
+    <string name="category">Category</string>
+    <string name="item_type">Item type</string>
+    <string name="for_sale">For sale</string>
+    <string name="for_rent">For rent</string>
+    <string name="rental_basis">Rental basis</string>
+    <string name="price">Price</string>
+    <string name="contact_information">Contact information</string>
+    <string name="upload_image">Upload image</string>
+    <string name="post_your_item">Post your item</string>
     <string name="error_getting_items">Error getting Items from Server.\nPlease check your internet connection</string>
     <string name="no_items_available">No items available</string>
     <string name="fetching_items">Fetching items...</string>
+    <string name="item_location">Item location</string>
+    <string name="posted_on">Posted on</string>
+    <string name="zip_code">Zip code</string>
+    <string name="apply_filters">Apply filters</string>
+    <string name="clear_filters">Clear filters</string>
+    <string name="enter_item_location">Enter item location</string>
+    <string name="filter">Filter</string>
+
+
+    <!-- General Strings -->
+    <string name="please_wait">Please wait</string>
+    <string name="enter_valid_input">Please enter valid input in all fields</string>
+    <string name="error_communicating_with_server">Error communicating with the Server.</string>
 </resources>

@@ -26,6 +26,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -74,99 +76,91 @@ class AccountFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (fragmentView == null) {
-            fragmentView = inflater.inflate(R.layout.fragment_account, container, false)
-        }
+            val view = inflater.inflate(R.layout.fragment_account, container, false)
+            signInSignOutLayout = view.findViewById(R.id.signin_signout_layout)
+            profileLayout = view.findViewById(R.id.profile_layout)
+            sharedPrefsInstance = SharedPrefs.getInstance(view.context)
+            emailInputLayout = view.findViewById(R.id.email_input_layout)
+            emailInput = view.findViewById(R.id.email_input)
+            passwordInputLayout = view.findViewById(R.id.password_input_layout)
+            passwordInput = view.findViewById(R.id.password_input)
+            buttonTop = view.findViewById(R.id.button_top)
+            buttonBottom = view.findViewById(R.id.button_bottom)
+            labelForButtonBottom = view.findViewById(R.id.label_for_button_bottom)
+            firstNameInputLayout = view.findViewById(R.id.first_name_input_layout)
+            firstNameInput = view.findViewById(R.id.first_name_input)
+            lastNameInput = view.findViewById(R.id.last_name_input)
+            lastNameInputLayout = view.findViewById(R.id.last_name_input_layout)
+            signOutButton = view.findViewById(R.id.profile_signout)
 
-        return fragmentView
-    }
+            var allInputFields = arrayOf(firstNameInput, lastNameInput, emailInput, passwordInput)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        signInSignOutLayout = view.findViewById(R.id.signin_signout_layout)
-        profileLayout = view.findViewById(R.id.profile_layout)
-        sharedPrefsInstance = SharedPrefs.getInstance(view.context)
-        emailInputLayout = view.findViewById(R.id.email_input_layout)
-        emailInput = view.findViewById(R.id.email_input)
-        passwordInputLayout = view.findViewById(R.id.password_input_layout)
-        passwordInput = view.findViewById(R.id.password_input)
-        buttonTop = view.findViewById(R.id.button_top)
-        buttonBottom = view.findViewById(R.id.button_bottom)
-        labelForButtonBottom = view.findViewById(R.id.label_for_button_bottom)
-        firstNameInputLayout = view.findViewById(R.id.first_name_input_layout)
-        firstNameInput = view.findViewById(R.id.first_name_input)
-        lastNameInput = view.findViewById(R.id.last_name_input)
-        lastNameInputLayout = view.findViewById(R.id.last_name_input_layout)
-        signOutButton = view.findViewById(R.id.profile_signout)
+            inputValidityMap = mutableMapOf(
+                firstNameInput.id to AccountUtils.getRegexForField(firstNameInput.id).matches(firstNameInput.text.toString()),
+                lastNameInput.id to AccountUtils.getRegexForField(lastNameInput.id).matches(lastNameInput.text.toString()),
+                emailInput.id to AccountUtils.getRegexForField(emailInput.id).matches(emailInput.text.toString()),
+                passwordInput.id to AccountUtils.getRegexForField(passwordInput.id).matches(passwordInput.text.toString())
+            )
 
+            allInputFields.forEach {
+                it.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                    if (!hasFocus) {
+                        val input = it.text.toString()
+                        val inputLayout = it.parent.parent as TextInputLayout
+                        var isInputValid = AccountUtils.getRegexForField(it.id).matches(input)
+                        var showErrorOnBox = input.isNotEmpty() && !isInputValid
+                        var errorMessage = "Invalid "+ inputLayout.hint.toString()
+                        // If its a password in sign in view, just check if its not empty
+                        if (it.id == R.id.password_input && firstNameInputLayout.visibility == View.GONE) {
+                            isInputValid = input.isNotEmpty()
+                            showErrorOnBox = input.isEmpty()
+                            errorMessage = "Please enter your Password"
+                        }
+                        inputValidityMap[it.id] = isInputValid
 
-        var allInputFields = arrayOf(firstNameInput, lastNameInput, emailInput, passwordInput)
-
-        inputValidityMap = mutableMapOf(
-            firstNameInput.id to AccountUtils.getRegexForField(firstNameInput.id).matches(firstNameInput.text.toString()),
-            lastNameInput.id to AccountUtils.getRegexForField(lastNameInput.id).matches(lastNameInput.text.toString()),
-            emailInput.id to AccountUtils.getRegexForField(emailInput.id).matches(emailInput.text.toString()),
-            passwordInput.id to AccountUtils.getRegexForField(passwordInput.id).matches(passwordInput.text.toString())
-        )
-
-        allInputFields.forEach {
-            it.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-                if (!hasFocus) {
-                    val input = it.text.toString()
-                    val inputLayout = it.parent.parent as TextInputLayout
-                    var isInputValid = AccountUtils.getRegexForField(it.id).matches(input)
-                    var showErrorOnBox = input.isNotEmpty() && !isInputValid
-                    var errorMessage = "Invalid "+ inputLayout.hint.toString()
-                    // If its a password in sign in view, just check if its not empty
-                    if (it.id == R.id.password_input && firstNameInputLayout.visibility == View.GONE) {
-                        isInputValid = input.isNotEmpty()
-                        showErrorOnBox = input.isEmpty()
-                        errorMessage = "Please enter your Password"
+                        checkInputValidity(showErrorOnBox, it.parent.parent as TextInputLayout, errorMessage)
                     }
-                    inputValidityMap[it.id] = isInputValid
-
-                    checkInputValidity(showErrorOnBox, it.parent.parent as TextInputLayout, errorMessage)
                 }
             }
-        }
 
-        // set up Listeners
-        onSignIn = View.OnClickListener {
-            // Close the keyboard
-            val imm: InputMethodManager = (view.context as AppCompatActivity)
-                .getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
+            // set up Listeners
+            onSignIn = View.OnClickListener {
+                Utils.closeTheKeyBoard(view)
 
-            if (!checkInputValidity(null, null, null)) {
-                Utils.showSnackBarForFailure(view, "Please enter valid Input in all fields")
-                return@OnClickListener
-            }
+                if (!checkInputValidity(null, null, null)) {
+                    Utils.showSnackBarForFailure(view, "Please enter valid input in all fields")
+                    return@OnClickListener
+                }
 
-            val email = emailInput.text.toString()
-            val password = passwordInput.text.toString()
+                val email = emailInput.text.toString()
+                val password = passwordInput.text.toString()
 
-            val signInRequest = userApi.Signin(SigninRequest(email = email, password = password))
+                val signInRequest = userApi.Signin(SigninRequest(email = email, password = password))
 
-            val signingInView = MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Please Wait")
-                .setMessage("Signing In..")
-                .setNegativeButton("Cancel", object : DialogInterface.OnClickListener{
-                    override fun onClick(dialog: DialogInterface?, which: Int) {
-                        signInRequest.cancel()
-                    }
-                }).show()
+                val signingInView = MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(requireContext().getString(R.string.please_wait))
+                    .setMessage("Signing In..")
+                    .setNegativeButton("Cancel", object : DialogInterface.OnClickListener{
+                        override fun onClick(dialog: DialogInterface?, which: Int) {
+                            signInRequest.cancel()
+                        }
+                    }).show()
 
-            signInRequest.enqueue(object: Callback<SigninResponse> {
+                signInRequest.enqueue(object: Callback<SigninResponse> {
                     override fun onFailure(call: Call<SigninResponse>, t: Throwable) {
                         signingInView.dismiss()
-                        Utils.showSnackBarForFailure(view, "Sign in failed")
+                        Utils.showSnackBarForFailure(view, requireContext().getString(R.string.error_communicating_with_server))
                     }
                     override fun onResponse(call: Call<SigninResponse>, response: Response<SigninResponse>) {
                         signingInView.dismiss()
                         if (response.code() == 200) {
-                            Utils.showSnackBarForSuccess(view, "Sign in successful")
+                            Utils.showSnackBarForSuccess(view, requireContext().getString(R.string.sign_in_successful))
                         } else {
-                            Utils.showSnackBarForFailure(view, "Sign in failed")
+                            val failureResponse = GsonBuilder().create().fromJson(response.errorBody()!!.string(),
+                                MessageResponse::class.java)
+                            Utils.showSnackBarForFailure(view, failureResponse.message)
                         }
+
                         val signInResponse = response.body()
                         val token = signInResponse?.jwt
                         val username = signInResponse?.username
@@ -179,75 +173,86 @@ class AccountFragment : Fragment() {
                         userId?.let { sharedPrefs.setUserId(userId) }
                         updateLayout()
                     }
-            })
-
-        }
-
-        onSignUp = View.OnClickListener {
-            // Close the keyboard
-            val imm: InputMethodManager = (view.context as AppCompatActivity)
-                .getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
-
-            if (!checkInputValidity(null, null, null)) {
-                Utils.showSnackBarForFailure(view, "Please enter valid Input in all fields")
-                return@OnClickListener
-            }
-
-
-            val firstName = firstNameInputLayout.editText?.text.toString()
-            val lastName = lastNameInputLayout.editText?.text.toString()
-            val email = emailInput.text.toString()
-            val password = passwordInput.text.toString()
-
-            val signUpRequest = userApi.Signup(SignupRequest(firstName=firstName,
-                lastName = lastName, email = email, password = password))
-
-            val signingupView = MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Please Wait")
-                .setMessage("Signing up..")
-                .setNegativeButton( "Cancel", object : DialogInterface.OnClickListener{
-                    override fun onClick(dialog: DialogInterface?, which: Int) {
-                        signUpRequest.cancel()
-                    }
-                }).show()
-
-            signUpRequest
-                .enqueue(object: Callback<MessageResponse>{
-                    override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
-                        signingupView.dismiss()
-                        Utils.showSnackBarForFailure(view, "Sign up Failed")
-                    }
-                    override fun onResponse(
-                        call: Call<MessageResponse>,
-                        response: Response<MessageResponse>
-                    ) {
-                        signingupView.dismiss()
-                        if (response.code() == 200) {
-                            Utils.showSnackBarForSuccess(view, "Sign up successful")
-                            setupViewForSignIn()
-                        } else {
-                            Utils.showSnackBarForFailure(view, "Sign up Failed")
-                        }
-                    }
                 })
 
+            }
+
+            onSignUp = View.OnClickListener {
+
+                Utils.closeTheKeyBoard(requireView())
+
+                if (!checkInputValidity(null, null, null)) {
+                    Utils.showSnackBarForFailure(view, "Please enter valid Input in all fields")
+                    return@OnClickListener
+                }
+
+                val firstName = firstNameInputLayout.editText?.text.toString()
+                val lastName = lastNameInputLayout.editText?.text.toString()
+                val email = emailInput.text.toString()
+                val password = passwordInput.text.toString()
+
+                val signUpRequest = userApi.Signup(SignupRequest(firstName=firstName,
+                    lastName = lastName, email = email, password = password))
+
+                val signingupView = MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Please Wait")
+                    .setMessage("Signing up..")
+                    .setNegativeButton( "Cancel", object : DialogInterface.OnClickListener{
+                        override fun onClick(dialog: DialogInterface?, which: Int) {
+                            signUpRequest.cancel()
+                        }
+                    }).show()
+
+                signUpRequest
+                    .enqueue(object: Callback<MessageResponse>{
+
+                        override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
+                            signingupView.dismiss()
+                            Utils.showSnackBarForFailure(view, requireContext()
+                                .getString(R.string.error_communicating_with_server))
+                        }
+
+                        override fun onResponse(call: Call<MessageResponse>, response: Response<MessageResponse>) {
+                            signingupView.dismiss()
+                            if (response.code() == 200) {
+                                response.body()!!.message
+                                Utils.showSnackBarForSuccess(view, requireContext().getString(R.string.sign_up_successful))
+                                setupViewForSignIn()
+                            } else {
+                                val failureResponse = GsonBuilder().create().fromJson(response.errorBody()!!.string(),
+                                    MessageResponse::class.java)
+                                Utils.showSnackBarForFailure(view, failureResponse.message)
+                            }
+                        }
+                    })
+            }
+
+            signOutButton.setOnClickListener {
+                sharedPrefsInstance.clearAll()
+                updateLayout()
+            }
+        
+            fragmentView = view
         }
 
-        signOutButton.setOnClickListener {
-            sharedPrefsInstance.clearAll()
-            updateLayout()
-        }
-
-        updateLayout()
-
+        return fragmentView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        updateLayout()
+    }
+    
     override fun onResume() {
         super.onResume()
         checkInputValidity(null, null, null)
     }
 
+    fun showOrHideAddItem(showOrHide : ShowAddButton) {
+        showAddButtonImpl = showOrHide
+    }
+
+    // Private helper methods
     /**
      * Pass in null if you want to check the input validity of all the fields
      * Otherwise pass in the particular field and its validity to color the box Red if error
@@ -305,7 +310,7 @@ class AccountFragment : Fragment() {
         }
     }
 
-    fun updateLayout() {
+    private fun updateLayout() {
         val isLoggedIn = sharedPrefsInstance.getEmail().isNotEmpty()
         if (isLoggedIn) {
             profileLayout.visibility = View.VISIBLE
@@ -319,11 +324,7 @@ class AccountFragment : Fragment() {
         }
     }
 
-    fun showOrHideAddItem(showOrHide : ShowAddButton) {
-        showAddButtonImpl = showOrHide
-    }
-
-    fun clearAllInputFocus() {
+    private fun clearAllInputFocus() {
         firstNameInput.clearFocus()
         lastNameInput.clearFocus()
         emailInput.clearFocus()

@@ -11,7 +11,9 @@ import retrofit2.http.*
 interface ItemsApi {
 
     @GET("/items")
-    fun getItems(@Query("type") itemTypes: String?, @Query("category") categories: String?) : Call<List<ItemsResponse>>
+    fun getItems(@Query("type") itemTypes: String?, @Query("category") categories: String?,
+                 @Query("city") cities: String?, @Query("state") states: String?,
+                 @Query("zipcode") zipcodes: String?, @Query("country") countries: String?) : Call<List<ItemsResponse>>
 
     @GET("/items/search")
     fun searchItems(@Query("key") searchKey: String) : Call<List<ItemsResponse>>
