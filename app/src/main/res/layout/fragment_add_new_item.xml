@@ -211,11 +211,12 @@
             android:layout_height="wrap_content"
             android:background="@drawable/border_background"
             >
-            <fragment android:id="@+id/address_places_api"
+        <fragment android:id="@+id/address_places_api"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
             />
+
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -237,13 +238,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            style="@style/GetItCheapTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:maxLength="100"
-            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/upload_image"
@@ -256,6 +250,16 @@
             android:text="@string/upload_image"
             app:backgroundTint="@android:color/holo_green_dark"
             app:cornerRadius="10dp"
+            />
+
+        <TextView
+            android:id="@+id/image_name"
+            android:layout_marginTop="-20dp"
+            style="@style/GetItCheapTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:maxLength="100"
             />
 
         <com.google.android.material.button.MaterialButton

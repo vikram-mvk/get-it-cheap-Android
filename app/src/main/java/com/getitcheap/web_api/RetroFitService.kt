@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 object RetroFitService {
     // 34.232.4.197
     // 10.0.2.2
-    val SERVER_IP = "34.232.4.197"
+    val SERVER_IP = "10.0.2.2"
     val PORT = "5000"
 
     // Android emulator to localhost = 10.0.2.2

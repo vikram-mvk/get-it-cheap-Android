@@ -91,8 +91,8 @@ object ItemUtils {
     @JvmStatic
     fun getLocationText(text : String) : SpannableString {
         val spannableString = SpannableString(text)
-        spannableString.setSpan(RelativeSizeSpan(0.8f),0, Math.min(text.length, 20), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        spannableString.setSpan(ForegroundColorSpan(Color.BLACK), 0, Math.min(text.length, 20), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(RelativeSizeSpan(0.8f),0, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(ForegroundColorSpan(Color.BLACK), 0, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return spannableString
     }
 

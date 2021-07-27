@@ -37,12 +37,14 @@ class Utils {
         @JvmStatic
         fun showToastForFailure(view : View, text: String?) {
             if (text == null || view.context == null) return
-            // Close the keyboard, to make the snackbar visible
+
             val imm: InputMethodManager = (view.context as AppCompatActivity)
                 .getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
             try {
-                Toast.makeText(view.context, text, Toast.LENGTH_SHORT).show()
+                val toast = Toast.makeText(view.context, text, Toast.LENGTH_SHORT)
+                toast.setMargin(toast.horizontalMargin, toast.verticalMargin - 45)
+                toast.show()
             }
             catch(e :Exception) {
                 Log.e("Exception in Toast", e.toString())

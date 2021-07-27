@@ -23,8 +23,6 @@ import retrofit2.Response
 
 class ItemsFragment : Fragment() {
 
-    private var fragmentView : View? = null
-
     lateinit var itemsLoadingLayout: LinearLayout
     lateinit var itemsRecyclerView: RecyclerView
     lateinit var searchView: androidx.appcompat.widget.SearchView
@@ -54,7 +52,7 @@ class ItemsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (fragmentView == null) {
+
             val view = inflater.inflate(R.layout.fragment_items, container, false)
 
             searchView = view.findViewById(R.id.search_input)
@@ -118,9 +116,7 @@ class ItemsFragment : Fragment() {
             })
 
 
-            fragmentView = view
-        }
-        return fragmentView
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -251,12 +247,7 @@ class ItemsFragment : Fragment() {
     }
 
     companion object {
-
-        @Volatile private var itemsFragment :ItemsFragment? = null
-
-        fun getInstance(): ItemsFragment =  itemsFragment ?: synchronized(this) {
-            itemsFragment ?: ItemsFragment().also { it -> itemsFragment = it }
-        }
+        fun newInstance() = ItemsFragment()
     }
 
 }

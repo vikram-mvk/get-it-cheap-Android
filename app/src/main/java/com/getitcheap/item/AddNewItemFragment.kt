@@ -1,6 +1,7 @@
 package com.getitcheap.item
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -12,12 +13,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.getitcheap.BaseActivity
 import com.getitcheap.R
 import com.getitcheap.data.SharedPrefs
 import com.getitcheap.utils.ItemUtils
@@ -31,6 +33,7 @@ import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -40,32 +43,32 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import java.nio.file.Files
 
 
 class AddNewItemFragment : Fragment() {
 
-    private var fragmentView: View? = null
-
-    lateinit var sharedPrefsInstance : SharedPrefs
-    lateinit var itemName : TextInputEditText
-    lateinit var description : TextInputEditText
-    lateinit var category : Spinner
-    lateinit var itemType : RadioGroup
-    lateinit var price : TextInputEditText
-    lateinit var rentalBasis : Spinner
-    lateinit var rentalBasisLayout : LinearLayout
-    lateinit var contact : TextInputEditText
+    lateinit var sharedPrefsInstance: SharedPrefs
+    lateinit var itemName: TextInputEditText
+    lateinit var description: TextInputEditText
+    lateinit var category: Spinner
+    lateinit var itemType: RadioGroup
+    lateinit var price: TextInputEditText
+    lateinit var rentalBasis: Spinner
+    lateinit var addressInput: AutocompleteSupportFragment
+    lateinit var rentalBasisLayout: LinearLayout
+    lateinit var contact: TextInputEditText
     lateinit var submitYourItem: MaterialButton
-    lateinit var uploadImage : MaterialButton
-    var address : String = ""
-    var imageFile : File? = null
+    lateinit var uploadImage: MaterialButton
+    lateinit var imageName: TextView
+
+    var address: String = ""
+    var imageFile: File? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-          // args
+            // args
         }
     }
 
@@ -73,83 +76,89 @@ class AddNewItemFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (fragmentView == null) {
-            val view = inflater.inflate(R.layout.fragment_add_new_item, container, false)
 
-            sharedPrefsInstance = SharedPrefs.getInstance(view.context)
-            itemName = view.findViewById(R.id.item_name_input)
-            description = view.findViewById(R.id.description_input)
-            category = view.findViewById(R.id.category_spinner)
-            itemType = view.findViewById(R.id.item_type_radio_group)
-            price = view.findViewById(R.id.price_input)
-            rentalBasisLayout = view.findViewById(R.id.rental_basis_layout)
-            rentalBasis = view.findViewById(R.id.rental_basis_spinner)
-            contact = view.findViewById(R.id.contact_input)
-            uploadImage = view.findViewById(R.id.upload_image)
-            submitYourItem = view.findViewById(R.id.submit_your_item)
+        val view = inflater.inflate(R.layout.fragment_add_new_item, container, false)
 
-            // Set up adapters for spinner
-            category.adapter = ItemUtils.getCategorySpinnerAdapter(view.context, true)
-            rentalBasis.adapter = ItemUtils.getRentalBasisSpinnerAdapter(view.context)
+        sharedPrefsInstance = SharedPrefs.getInstance(view.context)
+        itemName = view.findViewById(R.id.item_name_input)
+        description = view.findViewById(R.id.description_input)
+        category = view.findViewById(R.id.category_spinner)
+        itemType = view.findViewById(R.id.item_type_radio_group)
+        price = view.findViewById(R.id.price_input)
+        rentalBasisLayout = view.findViewById(R.id.rental_basis_layout)
+        rentalBasis = view.findViewById(R.id.rental_basis_spinner)
+        contact = view.findViewById(R.id.contact_input)
+        uploadImage = view.findViewById(R.id.upload_image)
+        imageName = view.findViewById(R.id.image_name)
+        submitYourItem = view.findViewById(R.id.submit_your_item)
+        addressInput = childFragmentManager.findFragmentById(R.id.address_places_api) as AutocompleteSupportFragment
 
-            itemType.setOnCheckedChangeListener { group, checkedId ->
-                when (checkedId) {
-                    R.id.item_type_sale -> rentalBasisLayout.visibility = View.GONE
-                    else -> rentalBasisLayout.visibility = View.VISIBLE
-                }
-            }
-
-            uploadImage.setOnClickListener {
-
-                if (ActivityCompat.checkSelfPermission(view.context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    requestPermissions(arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE), 2000);
-                } else {
-                    openGallery();
-                }
-            }
-
-            if (!Places.isInitialized()) {
-                Places.initialize(requireContext(), "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
-            }
-
-            val placesClient = Places.createClient(requireContext())
-
-            val autocompleteFragment =
-                childFragmentManager.findFragmentById(R.id.address_places_api) as AutocompleteSupportFragment
-
-            autocompleteFragment.setHint(ItemUtils.getLocationText(requireContext().getString(R.string.enter_item_location)))
-
-            // Specify the types of place data to return.
-            autocompleteFragment.setPlaceFields(listOf(Place.Field.ADDRESS))
-            autocompleteFragment.setTypeFilter(TypeFilter.ADDRESS)
-            autocompleteFragment.setCountries("US", "IND")
-
-            // Set up a PlaceSelectionListener to handle the response.
-            autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-                override fun onPlaceSelected(place: Place) {
-                    address = place.address!!
-                    autocompleteFragment.setHint(ItemUtils.getLocationText(address))
-                }
-
-                override fun onError(status: Status) { }
-            })
-
-            submitYourItem.setOnClickListener {
-                if (!checkInputValidity()) {
-                    Utils.showSnackBarForFailure(requireView(), requireContext().getString(R.string.enter_valid_input))
-                    return@setOnClickListener
-                }
-                uploadNewItem()
-            }
-
-            fragmentView = view
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
         }
 
-        return fragmentView
+        val placesClient = Places.createClient(requireContext())
+
+
+        addressInput.setHint(ItemUtils.getLocationText(requireContext().getString(R.string.enter_item_location)))
+
+        // Specify the types of place data to return.
+        addressInput.setPlaceFields(listOf(Place.Field.ADDRESS))
+        addressInput.setTypeFilter(TypeFilter.ADDRESS)
+        addressInput.setCountries("US", "IND")
+
+        // Set up a PlaceSelectionListener to handle the response.
+        addressInput.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                address = place.address!!
+                addressInput.setHint(ItemUtils.getLocationText(address))
+            }
+
+            override fun onError(status: Status) {}
+        })
+
+
+        // Set up adapters for spinner
+        category.adapter = ItemUtils.getCategorySpinnerAdapter(view.context, true)
+        rentalBasis.adapter = ItemUtils.getRentalBasisSpinnerAdapter(view.context)
+
+        itemType.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.item_type_sale -> rentalBasisLayout.visibility = View.GONE
+                else -> rentalBasisLayout.visibility = View.VISIBLE
+            }
+        }
+
+        uploadImage.setOnClickListener {
+
+            if (ActivityCompat.checkSelfPermission(view.context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE), 2000);
+                openGallery();
+            } else {
+                openGallery();
+            }
+        }
+
+        submitYourItem.setOnClickListener {
+            if (!checkInputValidity()) {
+                Utils.showSnackBarForFailure(requireView(), requireContext().getString(R.string.enter_valid_input))
+                return@setOnClickListener
+            }
+            uploadNewItem()
+        }
+
+        return view
+
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        address = ""
+        imageFile = null
+       
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -157,10 +166,19 @@ class AddNewItemFragment : Fragment() {
             try {
                 var path = data.data?.let { filePath -> return@let getPath(filePath) }
                 imageFile = File(path)
-
-                if (imageFile?.length()!! > 5120) {
-                    Utils.showSnackBarForFailure(requireView(), "Maximum allowed file size is 5 MB")
-                    return@onActivityResult
+                if (imageFile != null) {
+                    val fileSizeInBytes: Long = imageFile!!.length()
+                    val fileSizeInKB = fileSizeInBytes / 1024
+                    val fileSizeInMB = fileSizeInKB / 1024
+                    if (fileSizeInMB > 5) {
+                        Utils.showSnackBarForFailure(requireView(), "Maximum allowed file size is 5 MB")
+                        imageFile = null
+                        return@onActivityResult
+                    } else {
+                        imageName.text = imageFile!!.name
+                    }
+                } else {
+                    Utils.showSnackBarForFailure(requireView(), "Error uploading selected image")
                 }
             } catch (e: Exception) {
                    println(e.message)
@@ -179,7 +197,9 @@ class AddNewItemFragment : Fragment() {
     }
 
     private fun uploadNewItem() {
-
+        val uploadingAlert = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Please Wait")
+            .setMessage("Submitting item..").show()
         val itemName = itemName.text.toString().toRequestBody(MultipartBody.FORM)
         val description = description.text.toString().toRequestBody(MultipartBody.FORM)
         val category = category.selectedItem.toString().toRequestBody(MultipartBody.FORM)
@@ -213,13 +233,15 @@ class AddNewItemFragment : Fragment() {
                     call: Call<MessageResponse>,
                     response: Response<MessageResponse>
                 ) {
+                    uploadingAlert.dismiss()
                     val newItemResponse = response.body()
                     println(newItemResponse?.message)
                     Utils.showSnackBarForSuccess(view!!, "Your item has been posted!")
-
+                    BaseActivity.switchPage(requireContext(), R.id.navbar_items)
                 }
 
                 override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
+                    uploadingAlert.dismiss()
                     Utils.showSnackBarForFailure(view!!, "Error posting item.")
                     Log.d("err", t.message!!)
                 }
@@ -233,16 +255,17 @@ class AddNewItemFragment : Fragment() {
     }
 
     private fun openGallery() {
+        if (ActivityCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Utils.showSnackBarForFailure(requireView(), "Please grant permissions to gallery to upload image")
+        }
         val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         cameraIntent.type = "image/*"
         startActivityForResult(cameraIntent, 1000)
     }
 
     companion object {
-        @Volatile private var addNewItemFragment :AddNewItemFragment? = null
-
-        fun getInstance(): AddNewItemFragment =  addNewItemFragment ?: synchronized(this) {
-            addNewItemFragment ?: AddNewItemFragment().also { it -> addNewItemFragment = it }
-        }
+        fun newInstance() = AddNewItemFragment()
     }
 }

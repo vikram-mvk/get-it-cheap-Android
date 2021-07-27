@@ -74,7 +74,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/border_background"
         >
-        <androidx.fragment.app.FragmentContainerView
+        <fragment
             android:id="@+id/location_filter_autocomplete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

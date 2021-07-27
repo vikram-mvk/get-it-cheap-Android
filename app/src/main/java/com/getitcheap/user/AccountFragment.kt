@@ -1,14 +1,11 @@
 package com.getitcheap.user
 
-import android.app.Activity
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.getitcheap.R
@@ -26,7 +23,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,8 +30,6 @@ import retrofit2.Response
 
 
 class AccountFragment : Fragment() {
-
-    private var fragmentView: View? = null
 
     lateinit var sharedPrefsInstance : SharedPrefs
     lateinit var firstNameInputLayout : TextInputLayout
@@ -75,7 +69,7 @@ class AccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (fragmentView == null) {
+
             val view = inflater.inflate(R.layout.fragment_account, container, false)
             signInSignOutLayout = view.findViewById(R.id.signin_signout_layout)
             profileLayout = view.findViewById(R.id.profile_layout)
@@ -111,7 +105,7 @@ class AccountFragment : Fragment() {
                         var showErrorOnBox = input.isNotEmpty() && !isInputValid
                         var errorMessage = "Invalid "+ inputLayout.hint.toString()
                         // If its a password in sign in view, just check if its not empty
-                        if (it.id == R.id.password_input && firstNameInputLayout.visibility == View.GONE) {
+                        if (it.id == R.id.password_input && isSignInLayout()) {
                             isInputValid = input.isNotEmpty()
                             showErrorOnBox = input.isEmpty()
                             errorMessage = "Please enter your Password"
@@ -231,11 +225,8 @@ class AccountFragment : Fragment() {
                 sharedPrefsInstance.clearAll()
                 updateLayout()
             }
-        
-            fragmentView = view
-        }
 
-        return fragmentView
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -245,7 +236,6 @@ class AccountFragment : Fragment() {
     
     override fun onResume() {
         super.onResume()
-        checkInputValidity(null, null, null)
     }
 
     fun showOrHideAddItem(showOrHide : ShowAddButton) {
@@ -263,14 +253,14 @@ class AccountFragment : Fragment() {
             var errorMessageToast = "Invalid "+ inputLayout.hint
             if (showErrorOnLayout) {
                 inputLayout.setBoxColor(resources.getColor(R.color.errorRedBright, null))
-                Utils.showToastForFailure(requireView(), errorMessage)
+                // Utils.showToastForFailure(requireView(), errorMessage)
             } else {
                 inputLayout.setBoxColor(resources.getColor(R.color.border_background_color, null))
             }
             return showErrorOnLayout
         }
 
-        clearAllInputFocus() // to trigger the invalid input fields
+        triggerInputValidations() // to trigger the invalid input fields
 
         var isValid = false
 
@@ -278,7 +268,7 @@ class AccountFragment : Fragment() {
          isValid = inputValidityMap[emailInput.id]!! && passwordInput.text!!.isNotEmpty()
 
         // if firstName is visible, its a signup view and we also need to check password validity, firstName and lastName
-        if (firstNameInputLayout.visibility == View.VISIBLE) {
+        if (!isSignInLayout()) {
             isValid = isValid && inputValidityMap[passwordInput.id]!! && inputValidityMap[firstNameInput.id]!!
                     && inputValidityMap[lastNameInput.id]!!
         }
@@ -324,20 +314,24 @@ class AccountFragment : Fragment() {
         }
     }
 
-    private fun clearAllInputFocus() {
-        firstNameInput.clearFocus()
-        lastNameInput.clearFocus()
+    private fun triggerInputValidations() {
+        if (!isSignInLayout()) {
+            firstNameInput.requestFocus()
+            firstNameInput.clearFocus()
+            lastNameInput.requestFocus()
+            lastNameInput.clearFocus()
+        }
+        emailInput.requestFocus()
         emailInput.clearFocus()
+        passwordInput.requestFocus()
         passwordInput.clearFocus()
     }
 
+    private fun isSignInLayout() = firstNameInput.visibility == View.GONE
+
+
     companion object {
-
-        @Volatile private var accountFragment : AccountFragment? = null
-
-        fun getInstance(): AccountFragment =  accountFragment ?: synchronized(this) {
-            accountFragment ?: AccountFragment().also { it -> accountFragment = it }
-        }
+        fun newInstance() = AccountFragment()
     }
 
 }

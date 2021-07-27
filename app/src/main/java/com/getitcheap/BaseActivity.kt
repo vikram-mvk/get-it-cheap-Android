@@ -1,8 +1,10 @@
 package com.getitcheap
 
+import android.content.Context
 import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import com.getitcheap.data.SharedPrefs
 import com.getitcheap.user.AccountFragment
@@ -11,6 +13,7 @@ import com.getitcheap.item.ItemsFragment
 import com.getitcheap.item.ShowAddButton
 import com.getitcheap.web_api.RetroFitService.userApi
 import com.getitcheap.web_api.response.MessageResponse
+import com.google.android.libraries.places.api.Places
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import retrofit2.Call
@@ -18,7 +21,6 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class BaseActivity : AppCompatActivity() {
-    lateinit var navBar : BottomNavigationView
     lateinit var sharedPrefsInstance : SharedPrefs
 
     private val showAddButtonImpl = object: ShowAddButton {
@@ -27,10 +29,10 @@ class BaseActivity : AppCompatActivity() {
         }
     }
 
-    var sButtonFragmentMap = mapOf<Int, Fragment>(
-        R.id.navbar_items to ItemsFragment.getInstance(),
-        R.id.navbar_new_item to AddNewItemFragment.getInstance(),
-        R.id.navbar_account to AccountFragment.getInstance()
+    private var sButtonFragmentMap = mapOf<Int, Fragment>(
+        R.id.navbar_items to ItemsFragment.newInstance(),
+        R.id.navbar_new_item to AddNewItemFragment.newInstance(),
+        R.id.navbar_account to AccountFragment.newInstance()
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,14 +54,14 @@ class BaseActivity : AppCompatActivity() {
                     })
                     .show()
                     .setOnDismissListener {
-                        //this@BaseActivity.finishAffinity()
+                        this@BaseActivity.finishAffinity()
                     }
             }
         })
 
         navBar = findViewById(R.id.nav_bar)
         navBar.setOnNavigationItemSelectedListener {
-            sButtonFragmentMap[it.itemId]?.let { f -> switchBaseFragment(f) }
+            sButtonFragmentMap[it.itemId]?.let { f -> switchBaseFragment(this@BaseActivity, f) }
             return@setOnNavigationItemSelectedListener true
         }
         (sButtonFragmentMap[R.id.navbar_account] as AccountFragment).showOrHideAddItem(showAddButtonImpl)
@@ -80,14 +82,27 @@ class BaseActivity : AppCompatActivity() {
 
     }
 
-    private fun switchBaseFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.base_fragment_container, fragment)
-            .commit()
-    }
 
     fun setAddButtonShown(shown : Boolean) {
         navBar.menu.findItem(R.id.navbar_new_item).isVisible = shown
         navBar.invalidate()
     }
 
+    companion object {
+        @JvmStatic
+        lateinit var navBar: BottomNavigationView
+
+        @JvmStatic
+        fun switchPage(context : Context, id : Int) {
+            navBar.selectedItemId = id
+        }
+
+        @JvmStatic
+        fun switchBaseFragment(context: Context, fragment: Fragment) {
+            (context as BaseActivity).supportFragmentManager.beginTransaction()
+                .replace(R.id.base_fragment_container, fragment)
+                .commit()
+        }
+
+    }
 }
