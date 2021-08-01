@@ -24,21 +24,19 @@
                         android:id="@+id/item_image_1"
                         android:layout_width="match_parent"
                         android:layout_height="194dp"
-                        app:srcCompat="@drawable/ic_launcher_foreground"
+                        app:srcCompat="@drawable/no_image_available_icon"
                         android:scaleType="fitCenter"
                         />
                     <ImageView
                         android:id="@+id/item_image_2"
                         android:layout_width="match_parent"
                         android:layout_height="194dp"
-                        app:srcCompat="@drawable/ic_launcher_foreground"
                         android:scaleType="fitCenter"
                         />
                     <ImageView
                         android:id="@+id/item_image_3"
                         android:layout_width="match_parent"
                         android:layout_height="194dp"
-                        app:srcCompat="@drawable/ic_launcher_foreground"
                         android:scaleType="fitCenter"
                         />
             </ViewAnimator>

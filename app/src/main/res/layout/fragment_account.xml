@@ -282,10 +282,10 @@
         android:layout_height="wrap_content"
         android:text="Your Items"
         android:gravity="bottom"
-        android:layout_marginTop="1dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="1dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="5dp"
         />
     <TextView
         android:layout_below="@id/label_your_items"
@@ -293,9 +293,10 @@
         android:visibility="gone"
         tools:visibility="visible"
         android:layout_centerHorizontal="true"
+        android:layout_margin="15dp"
         style="@style/GetItCheapTextView.Center"
         android:textColor="@color/primaryLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Its empty here. Try posting some items."
         />

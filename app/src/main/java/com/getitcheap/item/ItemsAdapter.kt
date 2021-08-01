@@ -29,7 +29,6 @@ import retrofit2.Response
 class ItemsAdapter(private var items: List<ItemsResponse>, private var isProfileItems: Boolean,
                    private var token:String) : RecyclerView.Adapter<ItemsAdapter.ItemsViewHolder>() {
 
-    val S3_BASE_URL = "https://get-it-cheap.s3.amazonaws.com/"
     inner class ItemsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private val itemNameTextView : TextView =  itemView.findViewById(R.id.item_name_text)
@@ -95,9 +94,9 @@ class ItemsAdapter(private var items: List<ItemsResponse>, private var isProfile
 
 
             Glide.with(itemView.context)
-                .load(S3_BASE_URL+item.image)
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .error(R.drawable.ic_launcher_foreground)
+                .load(ItemUtils.S3_BASE_URL+item.image)
+                .placeholder(R.drawable.no_image_available_icon)
+                .error(R.drawable.no_image_available_icon)
                 .into(itemImage)
 
             itemView.setOnClickListener {

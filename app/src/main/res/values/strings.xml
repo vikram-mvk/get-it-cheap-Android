@@ -48,4 +48,7 @@
     <string name="please_wait">Please wait</string>
     <string name="enter_valid_input">Please enter valid input in all fields</string>
     <string name="error_communicating_with_server">Error communicating with the Server.</string>
+    <string name="title_activity_image_fullscreen_view">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

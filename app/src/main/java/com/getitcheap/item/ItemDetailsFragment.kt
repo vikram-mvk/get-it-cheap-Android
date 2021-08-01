@@ -1,5 +1,6 @@
 package com.getitcheap.item
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.fragment.app.Fragment
@@ -93,6 +94,10 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
             .error(R.drawable.no_image_available_icon)
             .into(itemImage1)
 
+        itemImage1.setOnClickListener {
+            val intent = Intent(requireContext(), ImageFullscreenViewActivity::class.java)
+            startActivity(intent)
+        }
 
         itemDescription.text = item.description
         itemLocation.text = item.itemLocation

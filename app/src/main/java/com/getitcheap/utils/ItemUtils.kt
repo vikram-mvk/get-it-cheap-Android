@@ -17,6 +17,8 @@ object ItemUtils {
     @JvmStatic
     val FOR_SALE = "for_sale"
 
+    @JvmStatic
+    val S3_BASE_URL = "https://get-it-cheap.s3.amazonaws.com/"
 
     @JvmStatic
     var itemTypesRadioButtonToDbString = mapOf(
