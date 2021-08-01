@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import com.getitcheap.data.SharedPrefs
 import com.getitcheap.user.AccountFragment
@@ -13,7 +12,6 @@ import com.getitcheap.item.ItemsFragment
 import com.getitcheap.item.ShowAddButton
 import com.getitcheap.web_api.RetroFitService.userApi
 import com.getitcheap.web_api.response.MessageResponse
-import com.google.android.libraries.places.api.Places
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import retrofit2.Call

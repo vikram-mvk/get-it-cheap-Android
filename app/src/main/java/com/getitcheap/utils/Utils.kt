@@ -3,6 +3,7 @@ package com.getitcheap.utils
 import android.app.Activity
 import android.graphics.Color
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -43,7 +44,7 @@ class Utils {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
             try {
                 val toast = Toast.makeText(view.context, text, Toast.LENGTH_SHORT)
-                toast.setMargin(toast.horizontalMargin, toast.verticalMargin - 45)
+                toast.setGravity(Gravity.BOTTOM, -10, 0)
                 toast.show()
             }
             catch(e :Exception) {

@@ -16,9 +16,7 @@ object RetroFitService {
     // Android emulator to localhost = 10.0.2.2
 
     private val httpclient = OkHttpClient.Builder().callTimeout(5, TimeUnit.SECONDS).build()
-
-    private val httpClientHealth = OkHttpClient.Builder().callTimeout(2, TimeUnit.SECONDS).build()
-
+    
     private val retrofit = Retrofit.Builder()
         .baseUrl("http://$SERVER_IP:$PORT/")
         .addConverterFactory(GsonConverterFactory.create())

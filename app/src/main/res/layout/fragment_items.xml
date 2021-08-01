@@ -24,7 +24,7 @@
         >
     </androidx.appcompat.widget.SearchView>
 
-    <HorizontalScrollView
+    <LinearLayout
         android:id="@+id/filters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -80,20 +80,19 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/filter_button"
                 android:layout_width="match_parent"
-                android:minWidth="110dp"
-                android:layout_height="40dp"
+                android:layout_height="45dp"
                 android:text="@string/filter"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
                 app:backgroundTint="@color/primaryButton"
                 android:fontFamily="@font/font_primary"
-                app:cornerRadius="25dp"
+                app:cornerRadius="15dp"
                 />
 
 
 
         </LinearLayout>
-    </HorizontalScrollView>
+    </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/items_response_text_view"

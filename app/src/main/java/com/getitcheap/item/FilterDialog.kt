@@ -1,10 +1,5 @@
 package com.getitcheap.item
 
-import android.graphics.Color
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
-import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -12,7 +7,6 @@ import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import com.getitcheap.R
 import com.getitcheap.utils.ItemUtils
-import com.getitcheap.utils.Utils
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -23,7 +17,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 
-class FilterDialog(fragmentView: ItemsFragment) {
+class FilterDialog(itemsFragment: ItemsFragment) {
 
     private var filterDialog: AlertDialog
     private var filterDialogView : View
@@ -46,15 +40,15 @@ class FilterDialog(fragmentView: ItemsFragment) {
     private var zipcodesFilter = HashSet<String>()
 
     init {
-        filterDialog = MaterialAlertDialogBuilder(fragmentView.requireContext()).create()
-        filterDialogView = fragmentView.layoutInflater.inflate(R.layout.items_filter, null)
+        filterDialog = MaterialAlertDialogBuilder(itemsFragment.requireContext()).create()
+        filterDialogView = itemsFragment.layoutInflater.inflate(R.layout.items_filter, null)
 
         rentalBasisFilterLayout = filterDialogView.findViewById(R.id.rental_basis_filter_layout)
         rentalBasisInput = filterDialogView.findViewById(R.id.rental_basis_filter_spinner)
-        rentalBasisInput.adapter = ItemUtils.getRentalBasisSpinnerAdapter(fragmentView.requireContext())
+        rentalBasisInput.adapter = ItemUtils.getRentalBasisSpinnerAdapter(itemsFragment.requireContext())
 
         categoryInput = filterDialogView.findViewById(R.id.category_filter_spinner)
-        categoryInput.adapter = ItemUtils.getCategorySpinnerAdapter(fragmentView.requireContext(), false)
+        categoryInput.adapter = ItemUtils.getCategorySpinnerAdapter(itemsFragment.requireContext(), false)
         zipCodeInput = filterDialogView.findViewById(R.id.zip_code_filter_input)
 
         clearFilters = filterDialogView.findViewById(R.id.clear_all_filters)
@@ -65,11 +59,11 @@ class FilterDialog(fragmentView: ItemsFragment) {
         }
 
         if (!Places.isInitialized()) {
-            Places.initialize(fragmentView.requireContext(), "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
+            Places.initialize(itemsFragment.requireContext(), "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
         }
-        val placesClient = Places.createClient(fragmentView.requireContext())
+        val placesClient = Places.createClient(itemsFragment.requireContext())
 
-        addressInput = fragmentView.childFragmentManager.findFragmentById(R.id.location_filter_autocomplete)
+        addressInput = itemsFragment.childFragmentManager.findFragmentById(R.id.location_filter_autocomplete)
                 as AutocompleteSupportFragment
         addressInput.setHint(locationHint)
         // Specify the types of place data to return.
@@ -169,7 +163,10 @@ class FilterDialog(fragmentView: ItemsFragment) {
         }
     }
 
-    fun clearCategoryFilters() = categoriesFilter.clear()
+    fun clearCategoryFilters() {
+        categoriesFilter.clear()
+        categoryInput.setSelection(0)
+    }
 
     fun setZipCodeFilter() {
         zipcodesFilter.clear()
@@ -177,6 +174,9 @@ class FilterDialog(fragmentView: ItemsFragment) {
             zipcodesFilter.add(zipCodeInput.text.toString())
         }
     }
-    fun clearZipCodeFilters() = zipcodesFilter.clear()
+    fun clearZipCodeFilters() {
+        zipCodeInput.text = null
+        zipcodesFilter.clear()
+    }
 
 }

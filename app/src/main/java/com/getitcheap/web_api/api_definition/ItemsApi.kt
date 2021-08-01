@@ -1,6 +1,6 @@
 package com.getitcheap.web_api.api_definition
 
-import com.getitcheap.web_api.request.NewItemRequest
+import com.getitcheap.web_api.request.DeleteItemsRequest
 import com.getitcheap.web_api.response.ItemsResponse
 import com.getitcheap.web_api.response.MessageResponse
 import okhttp3.MultipartBody
@@ -34,8 +34,9 @@ interface ItemsApi {
                 @Part("contact") contact: RequestBody
     ) : Call<MessageResponse>
 
-    @POST("/upload")
-    @Multipart
-    fun uploadImage(@Part part: Part) : Call<MessageResponse>
+    @GET("/items/{userId}")
+    fun getUserItems(@Header("Authorization") token: String, @Path("userId") userId : Long) : Call<List<ItemsResponse>>
 
+    @POST("/items/delete")
+    fun deleteItems(@Header("Authorization") token: String, @Body request : DeleteItemsRequest) : Call<MessageResponse>
 }

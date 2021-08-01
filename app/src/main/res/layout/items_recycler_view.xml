@@ -43,7 +43,16 @@
                     android:layout_height="wrap_content"
                     tools:text="title"
                     />
-
+                <ImageButton
+                    style="@style/GetItCheapTextView.Center"
+                    android:visibility="gone"
+                    android:id="@+id/delete_button"
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_delete"
+                    android:background="@android:color/transparent"
+                    />
                 <TextView
                     android:id="@+id/item_description_text"
                     android:layout_below="@id/item_name_text"

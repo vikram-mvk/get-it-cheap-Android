@@ -5,10 +5,12 @@ import android.content.SharedPreferences
 
 class SharedPrefs {
 
-    private val JWT_TOKEN: String = "JWT_TOKEN"
-    private val USER_NAME: String = "USER_NAME"
-    private val EMAIL: String = "EMAIL"
-    private val USER_ID: String = "USER_ID"
+    val JWT_TOKEN: String = "JWT_TOKEN"
+    val USER_NAME: String = "USER_NAME"
+    val FIRST_NAME: String = "FIRST_NAME"
+    val LAST_NAME: String = "LAST_NAME"
+    val EMAIL: String = "EMAIL"
+    val USER_ID: String = "USER_ID"
 
 
     private val GET_IT_CHEAP_SHARED_PREFS = "get_it_cheap_shared_prefs"
@@ -23,7 +25,7 @@ class SharedPrefs {
         return mSharedPrefs.getString(key, defaultValue)!!
     }
 
-    private fun putString(key : String, value: String) {
+    fun putString(key : String, value: String) {
         val editor = mSharedPrefs.edit()
         editor.putString(key, value)
         editor.commit()
@@ -86,6 +88,22 @@ class SharedPrefs {
 
     public fun setUsername(username: String) {
         putString(USER_NAME, username)
+    }
+
+    public fun setFirstName(firstName : String) {
+        putString(FIRST_NAME, firstName)
+    }
+
+    public fun getFirstName() : String {
+       return getString(FIRST_NAME, "")
+    }
+
+    public fun setLastName(lastName : String) {
+        putString(LAST_NAME, lastName)
+    }
+
+    public fun getLastName() : String {
+        return getString(LAST_NAME, "")
     }
 
     public fun getEmail() : String {

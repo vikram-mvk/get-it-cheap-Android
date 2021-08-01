@@ -9,11 +9,11 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.getitcheap.R
+import com.getitcheap.data.SharedPrefs
 import com.getitcheap.utils.Utils
 import com.getitcheap.utils.ItemUtils
 import com.getitcheap.web_api.RetroFitService.itemsApi
 import com.getitcheap.web_api.response.ItemsResponse
-import com.getitcheap.web_api.response.MessageResponse
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textview.MaterialTextView
@@ -23,6 +23,7 @@ import retrofit2.Response
 
 class ItemsFragment : Fragment() {
 
+    lateinit var sharedPrefsInstance : SharedPrefs
     lateinit var itemsLoadingLayout: LinearLayout
     lateinit var itemsRecyclerView: RecyclerView
     lateinit var searchView: androidx.appcompat.widget.SearchView
@@ -46,12 +47,14 @@ class ItemsFragment : Fragment() {
         arguments?.let {
             // If we have arguments, it goes here
         }
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+            sharedPrefsInstance = SharedPrefs.getInstance(requireContext())
 
             val view = inflater.inflate(R.layout.fragment_items, container, false)
 
@@ -67,7 +70,7 @@ class ItemsFragment : Fragment() {
             itemsRecyclerView.apply {
                 setHasFixedSize(true)
                 layoutManager = LinearLayoutManager(view.context)
-                adapter = ItemsAdapter(ArrayList<ItemsResponse>()) // Initially put a empty array
+                adapter = ItemsAdapter(ArrayList<ItemsResponse>(), false, sharedPrefsInstance.getJwtToken()) // Initially put a empty array
             }
 
             // Initially both are checked, add them in the set by default
@@ -129,7 +132,7 @@ class ItemsFragment : Fragment() {
     }
 
     private fun getItems(view: View) {
-
+        itemsResponseTextView.visibility = View.GONE
         itemsLoadingLayout.visibility = View.VISIBLE
 
         var itemTypesQueryString: String? = null
@@ -229,11 +232,13 @@ class ItemsFragment : Fragment() {
     }
 
     private fun getQueryString(filterSet: HashSet<String>) : String? {
-        var queryString :String? = null
+        var queryString :String? = ""
         val queryFormat = ",%s"
         filterSet.forEach { filter -> queryString += String.format(queryFormat, filter) }
-        if (queryString != null) {
+        if (queryString!!.isNotEmpty()) {
             queryString = queryString.substring(1)
+        } else {
+            queryString = null
         }
         return queryString
     }

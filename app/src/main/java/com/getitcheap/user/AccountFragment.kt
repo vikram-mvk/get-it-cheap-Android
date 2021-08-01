@@ -5,17 +5,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.getitcheap.R
 import com.getitcheap.data.SharedPrefs
+import com.getitcheap.item.ItemsAdapter
 import com.getitcheap.item.ShowAddButton
 import com.getitcheap.utils.AccountUtils
 import com.getitcheap.utils.Utils
+import com.getitcheap.web_api.RetroFitService.itemsApi
 import com.getitcheap.web_api.RetroFitService.userApi
 import com.getitcheap.web_api.request.SigninRequest
 import com.getitcheap.web_api.request.SignupRequest
+import com.getitcheap.web_api.request.UpdateProfileRequest
+import com.getitcheap.web_api.response.ItemsResponse
 import com.getitcheap.web_api.response.MessageResponse
 import com.getitcheap.web_api.response.SigninResponse
 import com.google.android.material.button.MaterialButton
@@ -45,11 +51,20 @@ class AccountFragment : Fragment() {
     lateinit var onSignIn : View.OnClickListener
     lateinit var onSignUp : View.OnClickListener
     lateinit var labelForButtonBottom : MaterialTextView
-    lateinit var profileLayout : LinearLayout
+    lateinit var profileLayout : RelativeLayout
     lateinit var signInSignOutLayout: ConstraintLayout
     lateinit var signOutButton: MaterialButton
     lateinit var showAddButtonImpl : ShowAddButton
     lateinit var inputValidityMap : MutableMap<Int, Boolean>
+    lateinit var yourItemsView : RecyclerView
+    lateinit var profileFirstName : TextView
+    lateinit var profileLastName : TextView
+    lateinit var profileEmail : TextView
+    lateinit var profileFirstNameEdit : ImageButton
+    lateinit var profileLastNameEdit : ImageButton
+    lateinit var profileEmailEdit : ImageButton
+    lateinit var noItemsPosted : TextView
+
 
     fun TextInputLayout.setBoxColor(color: Int) {
         val defaultStrokeColor = TextInputLayout::class.java.getDeclaredField("defaultStrokeColor")
@@ -86,6 +101,27 @@ class AccountFragment : Fragment() {
             lastNameInput = view.findViewById(R.id.last_name_input)
             lastNameInputLayout = view.findViewById(R.id.last_name_input_layout)
             signOutButton = view.findViewById(R.id.profile_signout)
+            yourItemsView = view.findViewById(R.id.profile_items_recycler_view)
+            profileEmail = view.findViewById(R.id.profile_email)
+            profileFirstName = view.findViewById(R.id.profile_firstname)
+            profileLastName = view.findViewById(R.id.profile_lastname)
+            profileEmailEdit = view.findViewById(R.id.profile_email_edit)
+            profileFirstNameEdit = view.findViewById(R.id.profile_firstname_edit)
+            profileLastNameEdit = view.findViewById(R.id.profile_lastname_edit)
+            noItemsPosted = view.findViewById(R.id.no_items_posted)
+
+            val onEditButtonClick = View.OnClickListener {
+                showEditDialog(it.id)
+            }
+            profileFirstNameEdit.setOnClickListener(onEditButtonClick)
+            profileLastNameEdit.setOnClickListener(onEditButtonClick)
+            profileEmailEdit.setOnClickListener(onEditButtonClick)
+
+            yourItemsView.apply {
+                setHasFixedSize(true)
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = ItemsAdapter(ArrayList<ItemsResponse>(), true, sharedPrefsInstance.getJwtToken())
+            }
 
             var allInputFields = arrayOf(firstNameInput, lastNameInput, emailInput, passwordInput)
 
@@ -129,7 +165,7 @@ class AccountFragment : Fragment() {
                 val email = emailInput.text.toString()
                 val password = passwordInput.text.toString()
 
-                val signInRequest = userApi.Signin(SigninRequest(email = email, password = password))
+                val signInRequest = userApi.signin(SigninRequest(email = email, password = password))
 
                 val signingInView = MaterialAlertDialogBuilder(requireContext())
                     .setTitle(requireContext().getString(R.string.please_wait))
@@ -159,12 +195,15 @@ class AccountFragment : Fragment() {
                         val token = signInResponse?.jwt
                         val username = signInResponse?.username
                         val email = signInResponse?.email
+                        val firstName = signInResponse?.firstName
+                        val lastName = signInResponse?.lastName
                         val userId = signInResponse?.userId
-                        val sharedPrefs = SharedPrefs.getInstance(view.context)
-                        token?.let { sharedPrefs.setJwtToken(token) }
-                        username?.let { sharedPrefs.setUsername(username) }
-                        email?.let { sharedPrefs.setEmail(email) }
-                        userId?.let { sharedPrefs.setUserId(userId) }
+                        token?.let { sharedPrefsInstance.setJwtToken(token) }
+                        username?.let { sharedPrefsInstance.setUsername(username) }
+                        firstName?.let { sharedPrefsInstance.setFirstName(firstName) }
+                        lastName?.let { sharedPrefsInstance.setLastName(lastName) }
+                        email?.let { sharedPrefsInstance.setEmail(email) }
+                        userId?.let { sharedPrefsInstance.setUserId(userId) }
                         updateLayout()
                     }
                 })
@@ -185,7 +224,7 @@ class AccountFragment : Fragment() {
                 val email = emailInput.text.toString()
                 val password = passwordInput.text.toString()
 
-                val signUpRequest = userApi.Signup(SignupRequest(firstName=firstName,
+                val signUpRequest = userApi.signup(SignupRequest(firstName=firstName,
                     lastName = lastName, email = email, password = password))
 
                 val signingupView = MaterialAlertDialogBuilder(requireContext())
@@ -276,6 +315,87 @@ class AccountFragment : Fragment() {
         return isValid
     }
 
+    private fun showEditDialog(id : Int) {
+        var title = ""
+        var value = ""
+
+        when (id) {
+            R.id.profile_firstname_edit -> {
+                title = requireContext().getString(R.string.first_name)
+                value = sharedPrefsInstance.getFirstName()
+            }
+            R.id.profile_lastname_edit -> {
+                title = requireContext().getString(R.string.last_name)
+                value = sharedPrefsInstance.getLastName()
+            }
+            R.id.profile_email_edit -> {
+                title = requireContext().getString(R.string.email)
+                value = sharedPrefsInstance.getEmail()
+            }
+        }
+
+        val editView = (this@AccountFragment).layoutInflater.inflate(R.layout.profile_edit_layout, null)
+        val editHeader = (editView.findViewById(R.id.profile_edit_input_layout) as TextInputLayout)
+        val profileUpdateButton = (editView.findViewById(R.id.profile_update_button) as MaterialButton)
+        editHeader.hint = title
+        editHeader.editText?.setText(value)
+
+        val editDialog = MaterialAlertDialogBuilder(requireContext()).create()
+        editDialog.setView(editView)
+        editDialog.show()
+
+        profileUpdateButton.setOnClickListener {
+            updateProfileAttribute(title, editHeader.editText?.text.toString())
+            editDialog.dismiss()
+        }
+
+    }
+
+    private fun updateProfileAttribute(title : String, value : String) {
+        var request = UpdateProfileRequest(id = sharedPrefsInstance.getUserId(), firstName = null, lastName = null,
+            email = null, password = null)
+        var sharedPreferenceKey = ""
+        when (title) {
+            getString(R.string.first_name) -> {
+                request.firstName = value
+                sharedPreferenceKey = sharedPrefsInstance.FIRST_NAME
+            }
+            getString(R.string.last_name) -> {
+                request.lastName = value
+                sharedPreferenceKey = sharedPrefsInstance.LAST_NAME
+            }
+            getString(R.string.email) -> {
+                request.email = value
+                sharedPreferenceKey = sharedPrefsInstance.EMAIL
+            }
+            getString(R.string.password) -> {
+                request.password = value
+                sharedPreferenceKey = sharedPrefsInstance.FIRST_NAME
+            }
+        }
+        userApi.updateProfile(sharedPrefsInstance.getJwtToken(), request).enqueue( object : Callback<MessageResponse> {
+            override fun onResponse(call: Call<MessageResponse>, response: Response<MessageResponse>) {
+                if (response.code() == 200) {
+                    Utils.showSnackBarForSuccess(requireView(), "$title successfully updated")
+                    sharedPrefsInstance.putString(sharedPreferenceKey, value)
+                    updateEditChanges()
+                } else {
+                    Utils.showSnackBarForFailure(requireView(), "Error updating $title")
+                }
+            }
+
+            override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
+                Utils.showSnackBarForFailure(requireView(), "Error updating $title")
+            }
+        }
+        )
+    }
+
+    private fun updateEditChanges() {
+        profileEmail.text = sharedPrefsInstance.getEmail()
+        profileFirstName.text = sharedPrefsInstance.getFirstName()
+        profileLastName.text = sharedPrefsInstance.getLastName()
+    }
     private fun setupViewForSignIn() {
         firstNameInputLayout.visibility = View.GONE
         lastNameInputLayout.visibility = View.GONE
@@ -301,17 +421,42 @@ class AccountFragment : Fragment() {
     }
 
     private fun updateLayout() {
-        val isLoggedIn = sharedPrefsInstance.getEmail().isNotEmpty()
-        if (isLoggedIn) {
-            profileLayout.visibility = View.VISIBLE
-            signInSignOutLayout.visibility = View.GONE
-            showAddButtonImpl.showAddButtonInMenu(sharedPrefsInstance.getEmail().isNotEmpty())
+        if (isSignedIn()) {
+            setupViewForProfile()
         } else {
             profileLayout.visibility = View.GONE
             signInSignOutLayout.visibility = View.VISIBLE
             setupViewForSignIn() // By default show SignIn view
             showAddButtonImpl.showAddButtonInMenu(sharedPrefsInstance.getEmail().isNotEmpty())
         }
+    }
+
+    private fun setupViewForProfile() {
+        profileLayout.visibility = View.VISIBLE
+        signInSignOutLayout.visibility = View.GONE
+        showAddButtonImpl.showAddButtonInMenu(sharedPrefsInstance.getEmail().isNotEmpty())
+        profileEmail.text = sharedPrefsInstance.getEmail()
+        profileFirstName.text = sharedPrefsInstance.getFirstName()
+        profileLastName.text = sharedPrefsInstance.getLastName()
+
+        itemsApi.getUserItems(sharedPrefsInstance.getJwtToken(), sharedPrefsInstance.getUserId()).enqueue(object : Callback<List<ItemsResponse>> {
+            override fun onResponse(call: Call<List<ItemsResponse>>, response: Response<List<ItemsResponse>>) {
+                if (response.code() == 200) {
+                    val items = response.body()!!
+                    yourItemsView.adapter!!.let { adapter ->  (adapter as ItemsAdapter).setData(items)}
+                    noItemsPosted.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+                    
+                }
+
+            }
+
+            override fun onFailure(call: Call<List<ItemsResponse>>, t: Throwable) {
+                Utils.showSnackBarForFailure(requireView(), "Error in getting items posted by you")
+            }
+
+        })
+
+
     }
 
     private fun triggerInputValidations() {
@@ -327,7 +472,9 @@ class AccountFragment : Fragment() {
         passwordInput.clearFocus()
     }
 
-    private fun isSignInLayout() = firstNameInput.visibility == View.GONE
+    private fun isSignedIn() = sharedPrefsInstance.getEmail().isNotEmpty()
+
+    private fun isSignInLayout() = firstNameInputLayout.visibility == View.GONE
 
 
     companion object {

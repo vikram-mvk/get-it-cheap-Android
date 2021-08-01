@@ -89,8 +89,8 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
 
         Glide.with(view.context)
             .load(S3_BASE_URL+item.image)
-            .placeholder(R.drawable.ic_launcher_foreground)
-            .error(R.drawable.ic_launcher_foreground)
+            .placeholder(R.drawable.no_image_available_icon)
+            .error(R.drawable.no_image_available_icon)
             .into(itemImage1)
 
 
