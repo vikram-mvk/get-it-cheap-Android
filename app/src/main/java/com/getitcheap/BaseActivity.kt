@@ -36,7 +36,7 @@ class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
-
+        /*
         userApi.isServerRunning().enqueue(object: Callback<MessageResponse> {
             override fun onResponse(call: Call<MessageResponse>, response: Response<MessageResponse>) { }
 
@@ -56,7 +56,7 @@ class BaseActivity : AppCompatActivity() {
                     }
             }
         })
-
+        */
         navBar = findViewById(R.id.nav_bar)
         navBar.setOnNavigationItemSelectedListener {
             sButtonFragmentMap[it.itemId]?.let { f -> switchBaseFragment(this@BaseActivity, f) }

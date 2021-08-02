@@ -29,6 +29,7 @@
     <string name="for_rent">For rent</string>
     <string name="rental_basis">Rental basis</string>
     <string name="price">Price</string>
+    <string name="price_currency">Price in your local currency</string>
     <string name="contact_information">Contact information</string>
     <string name="upload_image">Upload image</string>
     <string name="post_your_item">Post your item</string>

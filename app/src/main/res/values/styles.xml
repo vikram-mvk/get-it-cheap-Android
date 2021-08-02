@@ -23,6 +23,7 @@
         <item name="autoSizeMaxTextSize">16sp</item>
         <item name="autoSizeStepGranularity">1sp</item>
         <item name="autoSizeTextType">uniform</item>
+        <item name="android:maxLength">255</item>
     </style>
 
     <style name="GetItCheapTextView.Center">

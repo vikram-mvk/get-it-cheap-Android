@@ -57,7 +57,7 @@
             android:lines="3"
             android:fontFamily="@font/font_primary"
             app:textInputLayoutFocusedRectEnabled="true"
-            android:maxLength="255"
+            android:maxLength="250"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -126,28 +126,27 @@
             app:buttonTint="@color/primaryButton"
             android:orientation="horizontal"
             android:layout_marginStart="25dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="1dp"
             android:layout_weight="0.3"
             >
             <com.google.android.material.radiobutton.MaterialRadioButton
                 style="@style/GetItCheapTextView"
                 android:id="@+id/item_type_rent"
                 android:fontFamily="@font/font_primary"
-                android:minWidth="100dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/for_rent"
+                android:minWidth="90dp"
                 android:checked="true"
                 />
             <com.google.android.material.radiobutton.MaterialRadioButton
                 style="@style/GetItCheapTextView"
                 android:id="@+id/item_type_sale"
                 android:fontFamily="@font/font_primary"
-                android:minWidth="100dp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/for_sale"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="1dp"
                 />
         </RadioGroup>
@@ -192,7 +191,7 @@
             style="@style/GetItCheapTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/price"
+            android:hint="@string/price_currency"
             app:textInputLayoutFocusedRectEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -202,7 +201,7 @@
                 android:fontFamily="@font/font_primary"
                 app:textInputLayoutFocusedRectEnabled="true"
                 android:inputType="numberDecimal"
-                android:maxLength="5"
+                android:maxLength="6"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

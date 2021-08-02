@@ -70,7 +70,7 @@
                 android:layout_width="10dp"
                 android:layout_height="42dp"
                 android:text="Sort"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 app:backgroundTint="@color/primaryButton"

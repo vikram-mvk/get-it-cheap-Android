@@ -135,7 +135,6 @@ class AddNewItemFragment : Fragment() {
                     Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
             ) {
                 requestPermissions(arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE), 2000);
-                openGallery();
             } else {
                 openGallery();
             }
@@ -196,6 +195,19 @@ class AddNewItemFragment : Fragment() {
         return path
     }
 
+    private fun clearAllInput() {
+        itemName.text = null
+        description.text = null
+        category.setSelection(0)
+        itemType.clearCheck()
+        rentalBasis.setSelection(0)
+        address = ""
+        addressInput.setHint(ItemUtils.getLocationText(getString(R.string.enter_item_location)))
+        imageFile = null
+        imageName.text = null
+
+    }
+
     private fun uploadNewItem() {
         val uploadingAlert = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Please Wait")
@@ -237,6 +249,7 @@ class AddNewItemFragment : Fragment() {
                     val newItemResponse = response.body()
                     println(newItemResponse?.message)
                     Utils.showSnackBarForSuccess(view!!, "Your item has been posted!")
+                    clearAllInput()
                     BaseActivity.switchPage(requireContext(), R.id.navbar_items)
                 }
 
