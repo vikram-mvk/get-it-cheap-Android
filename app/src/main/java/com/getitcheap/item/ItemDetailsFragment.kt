@@ -96,6 +96,7 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
 
         itemImage1.setOnClickListener {
             val intent = Intent(requireContext(), ImageFullscreenViewActivity::class.java)
+            intent.putExtra("IMAGE_URL", S3_BASE_URL+item.image)
             startActivity(intent)
         }
 

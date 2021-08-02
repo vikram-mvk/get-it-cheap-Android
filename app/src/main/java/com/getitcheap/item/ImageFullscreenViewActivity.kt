@@ -35,6 +35,7 @@ class ImageFullscreenViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_fullscreen_view)
+        val imageUrl = intent.getStringExtra("IMAGE_URL")
         closeButton = findViewById(R.id.image_full_screen_close_button)
         image = findViewById(R.id.full_screen_image)
         closeButton.setOnClickListener {
@@ -42,7 +43,7 @@ class ImageFullscreenViewActivity : AppCompatActivity() {
         }
 
         Glide.with(this)
-            .load("http://noimg.com/123.jpg")
+            .load(imageUrl)
             .placeholder(R.drawable.no_image_available_icon)
             .error(R.drawable.no_image_available_icon)
             .into(image)
