@@ -1,7 +1,6 @@
 package com.getitcheap.item
 
 import android.Manifest
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -35,6 +34,7 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -53,6 +53,7 @@ class AddNewItemFragment : Fragment() {
     lateinit var category: Spinner
     lateinit var itemType: RadioGroup
     lateinit var price: TextInputEditText
+    lateinit var priceInputLayout: TextInputLayout
     lateinit var rentalBasis: Spinner
     lateinit var addressInput: AutocompleteSupportFragment
     lateinit var rentalBasisLayout: LinearLayout
@@ -85,12 +86,14 @@ class AddNewItemFragment : Fragment() {
         category = view.findViewById(R.id.category_spinner)
         itemType = view.findViewById(R.id.item_type_radio_group)
         price = view.findViewById(R.id.price_input)
+        priceInputLayout = view.findViewById(R.id.price_input_layout)
         rentalBasisLayout = view.findViewById(R.id.rental_basis_layout)
         rentalBasis = view.findViewById(R.id.rental_basis_spinner)
         contact = view.findViewById(R.id.contact_input)
         uploadImage = view.findViewById(R.id.upload_image)
         imageName = view.findViewById(R.id.image_name)
         submitYourItem = view.findViewById(R.id.submit_your_item)
+
         addressInput = childFragmentManager.findFragmentById(R.id.address_places_api) as AutocompleteSupportFragment
 
         if (!Places.isInitialized()) {
@@ -106,12 +109,17 @@ class AddNewItemFragment : Fragment() {
         // Specify the types of place data to return.
         addressInput.setPlaceFields(listOf(Place.Field.ADDRESS))
         addressInput.setTypeFilter(TypeFilter.ADDRESS)
-        addressInput.setCountries("US", "IND")
 
         // Set up a PlaceSelectionListener to handle the response.
         addressInput.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
                 address = place.address!!
+                val currency = ItemUtils.getCurrencyFromAddress(address)
+                if (currency.isNotEmpty()) {
+                    priceInputLayout.hint = requireContext().getString(R.string.price) + " ($currency)"
+                } else {
+                    priceInputLayout.hint = requireContext().getString(R.string.price_currency)
+                }
                 addressInput.setHint(ItemUtils.getLocationText(address))
             }
 

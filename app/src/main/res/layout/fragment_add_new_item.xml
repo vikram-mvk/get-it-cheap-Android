@@ -97,6 +97,7 @@
             />
 
 </LinearLayout>
+
       <LinearLayout
           android:id="@+id/item_type_layout"
           android:layout_width="match_parent"
@@ -187,13 +188,26 @@
            android:layout_marginEnd="5dp"
            />
 </LinearLayout>
+        <LinearLayout
+            style="@style/GetItCheapTextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_background"
+            >
+            <fragment android:id="@+id/address_places_api"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                />
+
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/price_input_layout"
             style="@style/GetItCheapTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/price_currency"
+            android:hint="@string/price"
             app:textInputLayoutFocusedRectEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -205,22 +219,8 @@
                 android:inputType="numberDecimal"
                 android:maxLength="6"
                 />
-
         </com.google.android.material.textfield.TextInputLayout>
 
-        <LinearLayout
-            style="@style/GetItCheapTextInputLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/border_background"
-            >
-        <fragment android:id="@+id/address_places_api"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-            />
-
-        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/contact_input_layout"

@@ -21,6 +21,9 @@ object ItemUtils {
     val S3_BASE_URL = "https://get-it-cheap.s3.amazonaws.com/"
 
     @JvmStatic
+    val currencies: MutableMap<String, String> = getAvailableCurrencies()
+
+    @JvmStatic
     var itemTypesRadioButtonToDbString = mapOf(
         R.id.item_type_rent to "for_rent",
         R.id.item_type_sale to "for_sale"
@@ -47,6 +50,45 @@ object ItemUtils {
         "per_week" to "Per week" ,
         "per_month" to "Per month"
     )
+
+    private fun getAvailableCurrencies(): MutableMap<String, String> {
+        val locales = Locale.getAvailableLocales()
+
+        // We use TreeMap so that the order of the data in the map sorted
+        // based on the country name.
+        val currencies: MutableMap<String, String> = TreeMap()
+
+        for (locale in locales) {
+            try {
+                currencies[locale.displayCountry] = Currency.getInstance(locale).currencyCode
+                currencies[locale.country] = Currency.getInstance(locale).currencyCode
+            } catch (e: Exception) {
+                // when the locale is not supported
+            }
+        }
+        return currencies
+    }
+
+
+    @JvmStatic
+    fun getCurrencyFromAddress(location : String) : String {
+        val country : String = location.split(",").last().trim()
+        var currency =  currencies.getOrDefault(country, "")
+        if (currency.isEmpty()) {
+            var countryCode = ""
+            if (country.contains(" ")) {
+                for (word in country.split(" ")) {
+                    countryCode += word[0]
+                }
+            }else {
+               countryCode = country.substring(0, country.lastIndex)
+            }
+
+            currency = currencies.getOrDefault(countryCode.toUpperCase(), "")
+        }
+
+        return currency
+    }
 
     @JvmStatic
     fun getItemTypeDbString(id :Int) : String {
