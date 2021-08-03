@@ -172,7 +172,10 @@ class ItemsFragment : Fragment() {
                 ) {
                     itemsLoadingLayout.visibility = View.GONE
 
-                    if (response.code() != 200) Utils.showSnackBarForFailure(view, "Error getting Items from Server")
+                    if (response.code() != 200) {
+                        Utils.showSnackBarForFailure(view, "Error getting Items from Server")
+                        return
+                    }
 
                     var items: List<ItemsResponse>? = response.body()
 
@@ -209,10 +212,10 @@ class ItemsFragment : Fragment() {
                 ) {
                     itemsLoadingLayout.visibility = View.GONE
 
-                    if (response.code() != 200) Utils.showSnackBarForFailure(
-                        view,
-                        "Error getting Items from Server"
-                    )
+                    if (response.code() != 200) {
+                        Utils.showSnackBarForFailure(view, "Error getting Items from Server")
+                        return
+                    }
 
                     var items: List<ItemsResponse>? = response.body()
 

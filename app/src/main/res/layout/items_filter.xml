@@ -77,7 +77,7 @@
         <fragment
             android:id="@+id/location_filter_autocomplete"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
             />
     </LinearLayout>

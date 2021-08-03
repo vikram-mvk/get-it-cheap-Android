@@ -100,8 +100,9 @@ class AddNewItemFragment : Fragment() {
         val placesClient = Places.createClient(requireContext())
 
 
-        addressInput.setHint(ItemUtils.getLocationText(requireContext().getString(R.string.enter_item_location)))
-
+        addressInput.setHint(requireContext().getString(R.string.enter_item_location))
+        val searchIcon : View = addressInput.requireView().findViewById(R.id.places_autocomplete_search_button)
+        searchIcon.visibility = View.GONE
         // Specify the types of place data to return.
         addressInput.setPlaceFields(listOf(Place.Field.ADDRESS))
         addressInput.setTypeFilter(TypeFilter.ADDRESS)
@@ -202,9 +203,11 @@ class AddNewItemFragment : Fragment() {
         itemType.clearCheck()
         rentalBasis.setSelection(0)
         address = ""
-        addressInput.setHint(ItemUtils.getLocationText(getString(R.string.enter_item_location)))
+        addressInput.setHint(requireContext().getString(R.string.enter_item_location))
         imageFile = null
         imageName.text = null
+        price.text = null
+        contact.text = null
 
     }
 
@@ -245,12 +248,16 @@ class AddNewItemFragment : Fragment() {
                     call: Call<MessageResponse>,
                     response: Response<MessageResponse>
                 ) {
-                    uploadingAlert.dismiss()
-                    val newItemResponse = response.body()
-                    println(newItemResponse?.message)
-                    Utils.showSnackBarForSuccess(view!!, "Your item has been posted!")
-                    clearAllInput()
-                    BaseActivity.switchPage(requireContext(), R.id.navbar_items)
+                    if (response.isSuccessful) {
+                        uploadingAlert.dismiss()
+                        val newItemResponse = response.body()
+                        println(newItemResponse?.message)
+                        Utils.showSnackBarForSuccess(view!!, "Your item has been posted!")
+                        clearAllInput()
+                        BaseActivity.switchPage(requireContext(), R.id.navbar_items)
+                    } else {
+                        Utils.showSnackBarForFailure(view!!, "Error posting item.")
+                    }
                 }
 
                 override fun onFailure(call: Call<MessageResponse>, t: Throwable) {

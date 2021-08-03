@@ -49,10 +49,10 @@ class ItemsAdapter(private var items: List<ItemsResponse>, private var isProfile
 
             if (isProfileItems) {
                 val params = itemCard.layoutParams as ViewGroup.MarginLayoutParams
-                params.setMargins(10)
+                params.setMargins(5)
                 itemCard.layoutParams = params
 
-                itemNameTextView.setPadding(5, 5, 5, 5)
+                itemNameTextView.setPadding(1, 2, 5, 2)
                 itemNameTextView.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 itemDescriptionTextView.visibility = View.GONE
                 itemImage.visibility = View.GONE

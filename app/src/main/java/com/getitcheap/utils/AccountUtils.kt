@@ -8,7 +8,7 @@ object AccountUtils {
     val IS_NOT_EMPTY = Regex("[\\w\\d]")
 
     @JvmStatic
-    val NAME_REGEX = Regex("^[A-Za-z]{1,30}$")
+    val NAME_REGEX = Regex("^[A-Za-z ]{1,30}$")
 
     @JvmStatic
     val EMAIL_REGEX = Regex("^[^@]+@[^@]+\\.[^@]+\$")

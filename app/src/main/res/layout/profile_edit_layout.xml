@@ -19,7 +19,7 @@
             android:id="@+id/profile_edit_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
             android:maxLength="30"
             app:textInputLayoutFocusedRectEnabled="true" />
     </com.google.android.material.textfield.TextInputLayout>

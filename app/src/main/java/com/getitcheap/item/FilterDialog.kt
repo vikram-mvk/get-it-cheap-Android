@@ -29,7 +29,7 @@ class FilterDialog(itemsFragment: ItemsFragment) {
     private var clearFilters : MaterialButton
     private var shouldReloadItems = false
     private var zipCodeInput : TextInputEditText
-    private var locationHint = ItemUtils.getLocationText("Filter by city")
+    private var locationHint = itemsFragment.requireContext().getString(R.string.filter_by_city)
     private var closeButton : ImageButton
 
     // Actual Filter values
@@ -66,6 +66,8 @@ class FilterDialog(itemsFragment: ItemsFragment) {
         addressInput = itemsFragment.childFragmentManager.findFragmentById(R.id.location_filter_autocomplete)
                 as AutocompleteSupportFragment
         addressInput.setHint(locationHint)
+        val searchIcon : View = addressInput.requireView().findViewById(R.id.places_autocomplete_search_button)
+        searchIcon.visibility = View.GONE
         // Specify the types of place data to return.
         addressInput.setPlaceFields(listOf(Place.Field.ADDRESS))
         addressInput.setTypeFilter(TypeFilter.CITIES)

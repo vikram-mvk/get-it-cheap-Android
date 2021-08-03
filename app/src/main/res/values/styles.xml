@@ -19,8 +19,8 @@
         <item name="android:fontFamily">@font/font_primary</item>
         <item name="android:textColor">@color/primaryText</item>
         <item name="android:ellipsize">end</item>
-        <item name="autoSizeMinTextSize">12sp</item>
-        <item name="autoSizeMaxTextSize">16sp</item>
+        <item name="autoSizeMinTextSize">11sp</item>
+        <item name="autoSizeMaxTextSize">15sp</item>
         <item name="autoSizeStepGranularity">1sp</item>
         <item name="autoSizeTextType">uniform</item>
         <item name="android:maxLength">255</item>

@@ -17,6 +17,7 @@
     <string name="sign_up">Sign up</string>
     <string name="sign_out">Sign out</string>
     <string name="dont_have_an_account">Don\'\t have an account ? </string>
+    <string name="profile">Profile</string>
 
 
     <!-- Item Strings-->
@@ -43,6 +44,8 @@
     <string name="clear_filters">Clear filters</string>
     <string name="enter_item_location">Enter item location</string>
     <string name="filter">Filter</string>
+    <string name="filter_by_city">Filter by city</string>
+
 
 
     <!-- General Strings -->
