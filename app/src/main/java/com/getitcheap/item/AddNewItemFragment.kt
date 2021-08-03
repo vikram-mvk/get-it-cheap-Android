@@ -78,32 +78,60 @@ class AddNewItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val view = inflater.inflate(R.layout.fragment_add_new_item, container, false)
-
-        sharedPrefsInstance = SharedPrefs.getInstance(view.context)
-        itemName = view.findViewById(R.id.item_name_input)
-        description = view.findViewById(R.id.description_input)
-        category = view.findViewById(R.id.category_spinner)
-        itemType = view.findViewById(R.id.item_type_radio_group)
-        price = view.findViewById(R.id.price_input)
-        priceInputLayout = view.findViewById(R.id.price_input_layout)
-        rentalBasisLayout = view.findViewById(R.id.rental_basis_layout)
-        rentalBasis = view.findViewById(R.id.rental_basis_spinner)
-        contact = view.findViewById(R.id.contact_input)
-        uploadImage = view.findViewById(R.id.upload_image)
-        imageName = view.findViewById(R.id.image_name)
-        submitYourItem = view.findViewById(R.id.submit_your_item)
-
+        val fragmentView = inflater.inflate(R.layout.fragment_add_new_item, container, false)
         addressInput = childFragmentManager.findFragmentById(R.id.address_places_api) as AutocompleteSupportFragment
+        sharedPrefsInstance = SharedPrefs.getInstance(fragmentView.context)
+        itemName = fragmentView.findViewById(R.id.item_name_input)
+        description = fragmentView.findViewById(R.id.description_input)
+        category = fragmentView.findViewById(R.id.category_spinner)
+        itemType = fragmentView.findViewById(R.id.item_type_radio_group)
+        price = fragmentView.findViewById(R.id.price_input)
+        priceInputLayout = fragmentView.findViewById(R.id.price_input_layout)
+        rentalBasisLayout = fragmentView.findViewById(R.id.rental_basis_layout)
+        rentalBasis = fragmentView.findViewById(R.id.rental_basis_spinner)
+        contact = fragmentView.findViewById(R.id.contact_input)
+        uploadImage = fragmentView.findViewById(R.id.upload_image)
+        imageName = fragmentView.findViewById(R.id.image_name)
+        submitYourItem = fragmentView.findViewById(R.id.submit_your_item)
+
 
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
+            Places.initialize(fragmentView.context, "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
         }
 
-        val placesClient = Places.createClient(requireContext())
+        val placesClient = Places.createClient(fragmentView.context)
 
+        // Set up adapters for spinner
+        category.adapter = ItemUtils.getCategorySpinnerAdapter(fragmentView.context, true)
+        rentalBasis.adapter = ItemUtils.getRentalBasisSpinnerAdapter(fragmentView.context)
 
-        addressInput.setHint(requireContext().getString(R.string.enter_item_location))
+        itemType.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.item_type_sale -> rentalBasisLayout.visibility = View.GONE
+                else -> rentalBasisLayout.visibility = View.VISIBLE
+            }
+        }
+
+        uploadImage.setOnClickListener {
+
+            if (ActivityCompat.checkSelfPermission(fragmentView.context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE), 2000);
+            } else {
+                openGallery();
+            }
+        }
+
+        submitYourItem.setOnClickListener {
+            if (!checkInputValidity()) {
+                Utils.showSnackBarForFailure(requireView(), requireContext().getString(R.string.enter_valid_input))
+                return@setOnClickListener
+            }
+            uploadNewItem()
+        }
+
+        addressInput.setHint(fragmentView.context.getString(R.string.enter_item_location))
         if (sharedPrefsInstance.getGPSAddress().isNotEmpty()) {
             addressInput.setHint(ItemUtils.getAddressText(sharedPrefsInstance.getGPSAddress()))
         }
@@ -129,38 +157,7 @@ class AddNewItemFragment : Fragment() {
             override fun onError(status: Status) {}
         })
 
-
-        // Set up adapters for spinner
-        category.adapter = ItemUtils.getCategorySpinnerAdapter(view.context, true)
-        rentalBasis.adapter = ItemUtils.getRentalBasisSpinnerAdapter(view.context)
-
-        itemType.setOnCheckedChangeListener { group, checkedId ->
-            when (checkedId) {
-                R.id.item_type_sale -> rentalBasisLayout.visibility = View.GONE
-                else -> rentalBasisLayout.visibility = View.VISIBLE
-            }
-        }
-
-        uploadImage.setOnClickListener {
-
-            if (ActivityCompat.checkSelfPermission(view.context,
-                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissions(arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE), 2000);
-            } else {
-                openGallery();
-            }
-        }
-
-        submitYourItem.setOnClickListener {
-            if (!checkInputValidity()) {
-                Utils.showSnackBarForFailure(requireView(), requireContext().getString(R.string.enter_valid_input))
-                return@setOnClickListener
-            }
-            uploadNewItem()
-        }
-
-        return view
+        return fragmentView
 
     }
 

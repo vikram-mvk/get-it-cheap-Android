@@ -64,27 +64,26 @@ class ItemsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-            sharedPrefsInstance = SharedPrefs.getInstance(requireContext())
 
-            val view = inflater.inflate(R.layout.fragment_items, container, false)
+            val fragmentView = inflater.inflate(R.layout.fragment_items, container, false)
+            sharedPrefsInstance = SharedPrefs.getInstance(fragmentView.context)
 
-
-            searchView = view.findViewById(R.id.search_input)
-            itemsRecyclerView = view.findViewById(R.id.items_recycler_view)
-            itemsLoadingLayout = view.findViewById(R.id.items_loading_layout)
-            itemsResponseTextView = view.findViewById(R.id.items_response_text_view)
-            checkboxForRent = view.findViewById(R.id.checkbox_for_rent)
-            checkboxForSale = view.findViewById(R.id.checkbox_for_sale)
-            filterButton = view.findViewById(R.id.filter_button)
+            searchView = fragmentView.findViewById(R.id.search_input)
+            itemsRecyclerView = fragmentView.findViewById(R.id.items_recycler_view)
+            itemsLoadingLayout = fragmentView.findViewById(R.id.items_loading_layout)
+            itemsResponseTextView = fragmentView.findViewById(R.id.items_response_text_view)
+            checkboxForRent = fragmentView.findViewById(R.id.checkbox_for_rent)
+            checkboxForSale = fragmentView.findViewById(R.id.checkbox_for_sale)
+            filterButton = fragmentView.findViewById(R.id.filter_button)
 
             filterDialog = FilterDialog(this@ItemsFragment)
             filterDialog.showRentalBasis(false)
 
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
+            Places.initialize(fragmentView.context, "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
         }
 
-        placesClient = Places.createClient(requireContext())
+        placesClient = Places.createClient(fragmentView.context)
 
         // If empty, they have never set a location filter and have not allowed GPS. In that case, set it to Boston
         if (cityFilters.isEmpty()) {
@@ -96,7 +95,7 @@ class ItemsFragment : Fragment() {
             // Initialize the recycler view
             itemsRecyclerView.apply {
                 setHasFixedSize(true)
-                layoutManager = LinearLayoutManager(view.context)
+                layoutManager = LinearLayoutManager(fragmentView.context)
                 adapter = ItemsAdapter(ArrayList<ItemsResponse>(), false, sharedPrefsInstance.getJwtToken()) // Initially put a empty array
             }
 
@@ -111,26 +110,26 @@ class ItemsFragment : Fragment() {
             filterDialog.getDialog().setOnDismissListener {
                 if (filterDialog.isReloadItemsRequired()) {
                     getAllFilters(filterDialog)
-                    getItems(view)
+                    getItems(fragmentView)
                     filterDialog.reloadComplete()
                 }
             }
 
             checkboxForSale.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) itemTypeFilters.add(ItemUtils.FOR_SALE) else itemTypeFilters.remove(ItemUtils.FOR_SALE)
-                getItems(view)
+                getItems(fragmentView)
             }
 
             checkboxForRent.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) itemTypeFilters.add(ItemUtils.FOR_RENT) else itemTypeFilters.remove(ItemUtils.FOR_RENT)
-                getItems(view)
+                getItems(fragmentView)
             }
 
             searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     val searchKey = searchView.query
                     if (searchKey.isNotEmpty()) {
-                        searchItems(view, searchKey.toString())
+                        searchItems(fragmentView, searchKey.toString())
                         return true
                     }
                     return false
@@ -140,14 +139,14 @@ class ItemsFragment : Fragment() {
 
             })
 
-        return view
+        return fragmentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         if (!isLocationFilterSet && ActivityCompat.checkSelfPermission(
-                    requireContext(),
+                    view.context,
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
@@ -169,7 +168,7 @@ class ItemsFragment : Fragment() {
                                 break
                             }
                         }
-                        getItems(requireView())
+                        getItems(view)
                     }
             } else {
             getItems(view)
@@ -185,7 +184,7 @@ class ItemsFragment : Fragment() {
     fun getItems(view: View) {
 
         filterDialog.setCurrentLocation("${cityFilters.first()}, ${stateFilters.first()}, ${countryFilters.first()}")
-        (requireActivity() as BaseActivity).supportActionBar?.subtitle =
+        (view.context as BaseActivity).supportActionBar?.subtitle =
             "${cityFilters.first()}, ${stateFilters.first()}"
 
         itemsResponseTextView.visibility = View.GONE
@@ -237,7 +236,7 @@ class ItemsFragment : Fragment() {
 
                     if (items == null || items.isEmpty()) {
                         itemsRecyclerView.visibility = View.GONE
-                        itemsResponseTextView.text = getString(R.string.no_items_available)
+                        itemsResponseTextView.text = view.context.getString(R.string.no_items_available)
                         itemsResponseTextView.visibility = View.VISIBLE
                     } else {
                         itemsRecyclerView.adapter?.let { adapter ->

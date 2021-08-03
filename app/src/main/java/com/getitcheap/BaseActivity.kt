@@ -126,9 +126,9 @@ class BaseActivity : AppCompatActivity() {
             activity.supportActionBar?.subtitle = ""
             activity.supportFragmentManager.beginTransaction()
                 .replace(R.id.base_fragment_container, fragment)
-                .commitNow()
+                .commit()
             Handler().postDelayed( {activity.supportActionBar?.title = navBar.menu.findItem(navBar.selectedItemId).title
-                .toString().toLowerCase().capitalize()} , 100)
+                .toString().toLowerCase().capitalize()} , 50)
         }
 
     }
