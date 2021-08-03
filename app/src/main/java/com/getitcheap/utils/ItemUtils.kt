@@ -60,8 +60,8 @@ object ItemUtils {
 
         for (locale in locales) {
             try {
-                currencies[locale.displayCountry] = Currency.getInstance(locale).currencyCode
-                currencies[locale.country] = Currency.getInstance(locale).currencyCode
+                currencies[locale.displayCountry] = Currency.getInstance(locale).symbol
+                currencies[locale.country] = Currency.getInstance(locale).symbol
             } catch (e: Exception) {
                 // when the locale is not supported
             }
@@ -91,6 +91,19 @@ object ItemUtils {
     }
 
     @JvmStatic
+    fun getCityFromAddress(address : String) : String {
+        val currentAddress = address.split(",")
+        return currentAddress[currentAddress.lastIndex - 2]
+    }
+
+    @JvmStatic
+    fun getCityStateStringFromAddress() {
+
+    }
+
+
+
+    @JvmStatic
     fun getItemTypeDbString(id :Int) : String {
         return itemTypesRadioButtonToDbString[id]!!
     }
@@ -111,7 +124,7 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun getPriceDisplayString(price :String) = String.format("$%s", price)
+    fun getPriceDisplayString(price :String, address : String) = getCurrencyFromAddress(address) + price
 
     @JvmStatic
     fun isForRent(type:String) = type == FOR_RENT
@@ -133,7 +146,7 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun getLocationText(text : String) : SpannableString {
+    fun getAddressText(text : String) : SpannableString {
         val spannableString = SpannableString(text)
         spannableString.setSpan(RelativeSizeSpan(0.7f),0, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         spannableString.setSpan(ForegroundColorSpan(Color.BLACK), 0, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)

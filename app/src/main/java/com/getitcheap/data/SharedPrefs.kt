@@ -11,6 +11,14 @@ class SharedPrefs {
     val LAST_NAME: String = "LAST_NAME"
     val EMAIL: String = "EMAIL"
     val USER_ID: String = "USER_ID"
+    val GPS_ADDRESS: String = "GPS_ADDRESS"
+    val GPS_CITY: String = "GPS_CITY"
+    val GPS_STATE: String = "GPS_STATE"
+    val GPS_COUNTTY: String = "GPS_COUNTRY"
+
+    val FILTER_CITY: String = "FILTER_CITY"
+    val FILTER_STATE: String = "FILTER_STATE"
+    val FILTER_COUNTTY: String = "FILTER_COUNTRY"
 
 
     private val GET_IT_CHEAP_SHARED_PREFS = "get_it_cheap_shared_prefs"
@@ -89,6 +97,27 @@ class SharedPrefs {
     public fun setUsername(username: String) {
         putString(USER_NAME, username)
     }
+
+
+    public fun getGPSAddress() : String {
+        return getString(GPS_ADDRESS, "")
+    }
+
+    public fun setGPSAddress(address : String) {
+        putString(GPS_ADDRESS, address)
+        val addressParts = address.split(",")
+        putString(GPS_CITY, (addressParts.getOrElse(1) {""}).trim())
+        var state = (addressParts.getOrElse(2) {""}).trim()
+        if (state.contains(" ")) {
+            state = (state.split(" ").getOrElse(0) {""}).trim()
+        }
+        putString(GPS_STATE, state)
+        putString(GPS_COUNTTY, (addressParts.getOrElse(3) {""}).trim())
+    }
+
+    public fun getGPSCity() = getString(GPS_CITY, "Boston")
+    public fun getGPSState() = getString(GPS_STATE, "MA")
+    public fun getGPSCountry() = getString(GPS_COUNTTY, "USA")
 
     public fun setFirstName(firstName : String) {
         putString(FIRST_NAME, firstName)

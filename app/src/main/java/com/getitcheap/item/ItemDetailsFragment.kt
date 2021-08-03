@@ -81,7 +81,7 @@ class ItemDetailsFragment(private val item: ItemsResponse) : Fragment() {
 
         itemName.text = item.itemName
         itemType.text = ItemUtils.getItemTypeDisplayString(item.itemType)
-        itemPrice.text = ItemUtils.getPriceDisplayString(item.price)
+        itemPrice.text = ItemUtils.getPriceDisplayString(item.price, item.itemLocation)
 
         if (ItemUtils.isForRent(item.itemType)) {
             itemRentalBasis.text = ItemUtils.getRentalBasisDisplayString(item.rentalBasis!!)

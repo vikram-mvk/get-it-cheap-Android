@@ -1,19 +1,27 @@
 package com.getitcheap.item
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.getitcheap.BaseActivity
 import com.getitcheap.R
 import com.getitcheap.data.SharedPrefs
 import com.getitcheap.utils.Utils
 import com.getitcheap.utils.ItemUtils
 import com.getitcheap.web_api.RetroFitService.itemsApi
 import com.getitcheap.web_api.response.ItemsResponse
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textview.MaterialTextView
@@ -32,7 +40,9 @@ class ItemsFragment : Fragment() {
     lateinit var checkboxForSale: MaterialCheckBox
     lateinit var sortButton: MaterialButton
     lateinit var filterButton: MaterialButton
-
+    lateinit var placesClient : PlacesClient
+    lateinit var filterDialog : FilterDialog
+    var isLocationFilterSet = false
 
     // filters
     private var itemTypeFilters = HashSet<String>();
@@ -58,6 +68,7 @@ class ItemsFragment : Fragment() {
 
             val view = inflater.inflate(R.layout.fragment_items, container, false)
 
+
             searchView = view.findViewById(R.id.search_input)
             itemsRecyclerView = view.findViewById(R.id.items_recycler_view)
             itemsLoadingLayout = view.findViewById(R.id.items_loading_layout)
@@ -65,6 +76,22 @@ class ItemsFragment : Fragment() {
             checkboxForRent = view.findViewById(R.id.checkbox_for_rent)
             checkboxForSale = view.findViewById(R.id.checkbox_for_sale)
             filterButton = view.findViewById(R.id.filter_button)
+
+            filterDialog = FilterDialog(this@ItemsFragment)
+            filterDialog.showRentalBasis(false)
+
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), "AIzaSyC_DfrZTQGTxzVzLOuPKQvMHgB8ffmSVDE");
+        }
+
+        placesClient = Places.createClient(requireContext())
+
+        // If empty, they have never set a location filter and have not allowed GPS. In that case, set it to Boston
+        if (cityFilters.isEmpty()) {
+            cityFilters.add(sharedPrefsInstance.getGPSCity())
+            stateFilters.add(sharedPrefsInstance.getGPSState())
+            countryFilters.add(sharedPrefsInstance.getGPSCountry())
+        }
 
             // Initialize the recycler view
             itemsRecyclerView.apply {
@@ -77,9 +104,6 @@ class ItemsFragment : Fragment() {
             itemTypeFilters.add(ItemUtils.FOR_RENT)
             itemTypeFilters.add(ItemUtils.FOR_SALE)
 
-            val filterDialog = FilterDialog(this@ItemsFragment)
-            filterDialog.showRentalBasis(false)
-
             filterButton.setOnClickListener {
                 filterDialog.getDialog().show()
             }
@@ -91,8 +115,6 @@ class ItemsFragment : Fragment() {
                     filterDialog.reloadComplete()
                 }
             }
-
-            getItems(view)
 
             checkboxForSale.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) itemTypeFilters.add(ItemUtils.FOR_SALE) else itemTypeFilters.remove(ItemUtils.FOR_SALE)
@@ -118,12 +140,40 @@ class ItemsFragment : Fragment() {
 
             })
 
-
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (!isLocationFilterSet && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                placesClient.findCurrentPlace(FindCurrentPlaceRequest.newInstance(listOf(Place.Field.ADDRESS)))
+                    .addOnSuccessListener {
+                        for (maybePlace in it.placeLikelihoods) {
+                            if (maybePlace.place.address != null) {
+                                val addressParts = maybePlace.place.address?.split(",")
+                                if (addressParts?.size!! < 3) {
+                                    continue
+                                }
+                                cityFilters.clear()
+                                stateFilters.clear()
+                                countryFilters.clear()
+                                sharedPrefsInstance.setGPSAddress(maybePlace.place.address!!)
+                                cityFilters.add(sharedPrefsInstance.getGPSCity())
+                                stateFilters.add(sharedPrefsInstance.getGPSState())
+                                countryFilters.add(sharedPrefsInstance.getGPSCountry())
+                                break
+                            }
+                        }
+                        getItems(requireView())
+                    }
+            } else {
+            getItems(view)
+        }
 
     }
 
@@ -131,7 +181,13 @@ class ItemsFragment : Fragment() {
         super.onResume()
     }
 
-    private fun getItems(view: View) {
+
+    fun getItems(view: View) {
+
+        filterDialog.setCurrentLocation("${cityFilters.first()}, ${stateFilters.first()}, ${countryFilters.first()}")
+        (requireActivity() as BaseActivity).supportActionBar?.subtitle =
+            "${cityFilters.first()}, ${stateFilters.first()}"
+
         itemsResponseTextView.visibility = View.GONE
         itemsLoadingLayout.visibility = View.VISIBLE
 
@@ -252,6 +308,16 @@ class ItemsFragment : Fragment() {
         stateFilters = filterDialog.getStatesFilter()
         countryFilters = filterDialog.getCountriesFilter()
         zipCodeFilters = filterDialog.getZipCodesFilter()
+        // When they it clear filters, default to GPS location (if unknown, its Boston)
+        if (cityFilters.isEmpty()) {
+            cityFilters.add(sharedPrefsInstance.getGPSCity())
+            stateFilters.add(sharedPrefsInstance.getGPSState())
+            countryFilters.add(sharedPrefsInstance.getGPSCountry())
+            isLocationFilterSet = false
+        } else {
+            isLocationFilterSet = true
+        }
+
     }
 
     companion object {

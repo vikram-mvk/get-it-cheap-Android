@@ -15,6 +15,10 @@ import com.google.android.material.snackbar.Snackbar
 class Utils {
 
     companion object {
+
+        @JvmStatic
+        val ACTION_BAR_TITLE = "Get It Cheap : "
+
         @JvmStatic
         fun showSnackBarForFailure(view : View, text: String?) {
             if (text == null || view.context == null) return

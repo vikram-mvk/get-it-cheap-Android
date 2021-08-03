@@ -44,7 +44,7 @@ class ItemsAdapter(private var items: List<ItemsResponse>, private var isProfile
 
             itemNameTextView.text = item.itemName
             itemDescriptionTextView.text = item.description
-            itemPriceTextView.text = String.format("$%s", item.price)
+            itemPriceTextView.text = (ItemUtils.getCurrencyFromAddress(item.itemLocation) + item.price)
             itemTypeTextView.text = ItemUtils.getItemTypeDisplayString(item.itemType)
 
             if (isProfileItems) {
@@ -100,7 +100,8 @@ class ItemsAdapter(private var items: List<ItemsResponse>, private var isProfile
                 .into(itemImage)
 
             itemView.setOnClickListener {
-                (itemView.context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                val activity = itemView.context as AppCompatActivity
+                activity.supportFragmentManager.beginTransaction()
                     .setCustomAnimations(android.R.anim.slide_in_left, 0,0,
                         android.R.anim.slide_out_right)
                     .replace(R.id.base_fragment_container, ItemDetailsFragment(items[absoluteAdapterPosition]))

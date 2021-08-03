@@ -29,7 +29,7 @@ class FilterDialog(itemsFragment: ItemsFragment) {
     private var clearFilters : MaterialButton
     private var shouldReloadItems = false
     private var zipCodeInput : TextInputEditText
-    private var locationHint = itemsFragment.requireContext().getString(R.string.filter_by_city)
+    private var locationHint = ItemUtils.getAddressText(itemsFragment.requireContext().getString(R.string.filter_by_city))
     private var closeButton : ImageButton
 
     // Actual Filter values
@@ -37,7 +37,7 @@ class FilterDialog(itemsFragment: ItemsFragment) {
     private var citiesFilter = HashSet<String>()
     private var statesFilter = HashSet<String>()
     private var countriesFilter = HashSet<String>()
-    private var zipcodesFilter = HashSet<String>()
+    private var zipCodesFilter = HashSet<String>()
 
     init {
         filterDialog = MaterialAlertDialogBuilder(itemsFragment.requireContext()).create()
@@ -71,12 +71,11 @@ class FilterDialog(itemsFragment: ItemsFragment) {
         // Specify the types of place data to return.
         addressInput.setPlaceFields(listOf(Place.Field.ADDRESS))
         addressInput.setTypeFilter(TypeFilter.CITIES)
-        addressInput.setCountries("US", "IND")
         // Set up a PlaceSelectionListener to handle the response.
         addressInput.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
                 place.address?.let { address ->
-                    val addressSpannable = ItemUtils.getLocationText(address)
+                    val addressSpannable = ItemUtils.getAddressText(address)
                     addressInput.setHint(addressSpannable)
                     setAddressFilters(address)
                 }
@@ -113,6 +112,11 @@ class FilterDialog(itemsFragment: ItemsFragment) {
         return filterDialog
     }
 
+    fun setCurrentLocation(currentLocation : String) {
+        locationHint = ItemUtils.getAddressText(currentLocation)
+        addressInput.setHint(locationHint)
+    }
+
     fun getCategoriesFilter(): HashSet<String> {
         return categoriesFilter
     }
@@ -126,7 +130,7 @@ class FilterDialog(itemsFragment: ItemsFragment) {
     }
 
     fun getZipCodesFilter(): HashSet<String> {
-        return zipcodesFilter
+        return zipCodesFilter
     }
 
     fun getCountriesFilter() : HashSet<String> {
@@ -171,14 +175,14 @@ class FilterDialog(itemsFragment: ItemsFragment) {
     }
 
     fun setZipCodeFilter() {
-        zipcodesFilter.clear()
+        zipCodesFilter.clear()
         if (zipCodeInput.text.toString().isNotEmpty()) {
-            zipcodesFilter.add(zipCodeInput.text.toString())
+            zipCodesFilter.add(zipCodeInput.text.toString())
         }
     }
     fun clearZipCodeFilters() {
         zipCodeInput.text = null
-        zipcodesFilter.clear()
+        zipCodesFilter.clear()
     }
 
 }

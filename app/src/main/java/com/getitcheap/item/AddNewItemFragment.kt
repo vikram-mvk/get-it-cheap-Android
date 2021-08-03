@@ -104,6 +104,9 @@ class AddNewItemFragment : Fragment() {
 
 
         addressInput.setHint(requireContext().getString(R.string.enter_item_location))
+        if (sharedPrefsInstance.getGPSAddress().isNotEmpty()) {
+            addressInput.setHint(ItemUtils.getAddressText(sharedPrefsInstance.getGPSAddress()))
+        }
         val searchIcon : View = addressInput.requireView().findViewById(R.id.places_autocomplete_search_button)
         searchIcon.visibility = View.GONE
         // Specify the types of place data to return.
@@ -120,7 +123,7 @@ class AddNewItemFragment : Fragment() {
                 } else {
                     priceInputLayout.hint = requireContext().getString(R.string.price_currency)
                 }
-                addressInput.setHint(ItemUtils.getLocationText(address))
+                addressInput.setHint(ItemUtils.getAddressText(address))
             }
 
             override fun onError(status: Status) {}
@@ -265,6 +268,7 @@ class AddNewItemFragment : Fragment() {
                         BaseActivity.switchPage(requireContext(), R.id.navbar_items)
                     } else {
                         Utils.showSnackBarForFailure(view!!, "Error posting item.")
+                        uploadingAlert.dismiss()
                     }
                 }
 
